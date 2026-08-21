@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة أكاديمية النبلاء التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 font-sans p-4">
     <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
@@ -51,15 +51,10 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://axhddoktuhjhscevstbr.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_';
-        
-        let supabaseClient;
-        try {
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch (e) {
-            console.error("Supabase init error:", e);
-        }
+        // الرابط والمفتاح المحدثان
+        const supabaseUrl = 'https://axhddoktuhjhscovstbr.supabase.co';
+        const supabaseKey = 'sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -84,52 +79,45 @@
                 return;
             }
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('student')
-                    .insert([{ id: code, name: name, grade: grade, phone: phone }]);
+            const { data, error } = await supabaseClient
+                .from('student')
+                .insert([{ id: code, name: name, grade: grade, phone: phone }]);
 
-                if (error) {
-                    alert('خطأ من قاعدة البيانات: ' + error.message);
-                } else {
-                    alert('تم حفظ الطالب بنجاح!');
-                    document.getElementById('addCode').value = '';
-                    document.getElementById('addName').value = '';
-                    document.getElementById('addGrade').value = '';
-                    document.getElementById('addPhone').value = '';
-                }
-            } catch (err) {
-                alert('فشل الاتصال بقاعدة البيانات. تأكد من إعدادات Supabase API.');
+            if (error) {
+                alert('حدث خطأ أثناء الحفظ: ' + error.message);
+                console.error(error);
+            } else {
+                alert('تم حفظ الطالب بنجاح!');
+                document.getElementById('addCode').value = '';
+                document.getElementById('addName').value = '';
+                document.getElementById('addGrade').value = '';
+                document.getElementById('addPhone').value = '';
             }
         }
 
         async function fetchStudent() {
             const code = document.getElementById('sCode').value.trim();
             if (!code) {
-                alert('يرجى أدخل كود الطالب');
+                alert('يرجى إدخال كود الطالب');
                 return;
             }
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('student')
-                    .select('*')
-                    .eq('id', code)
-                    .maybeSingle();
+            const { data, error } = await supabaseClient
+                .from('student')
+                .select('*')
+                .eq('id', code)
+                .maybeSingle();
 
-                const report = document.getElementById('studentReport');
-                if (data) {
-                    report.classList.remove('hidden');
-                    report.innerHTML = `
-                        <p class="mb-1"><b>الاسم:</b> ${data.name || 'غير محدد'}</p>
-                        <p class="mb-1"><b>الصف:</b> ${data.grade || 'غير محدد'}</p>
-                        <p><b>الهاتف:</b> ${data.phone || 'غير محدد'}</p>
-                    `;
-                } else {
-                    alert('لم يتم العثور على طالب بهذا الكود!');
-                }
-            } catch (err) {
-                alert('خطأ في جلب البيانات!');
+            const report = document.getElementById('studentReport');
+            if (data) {
+                report.classList.remove('hidden');
+                report.innerHTML = `
+                    <p class="mb-1"><b>الاسم:</b> ${data.name || 'غير محدد'}</p>
+                    <p class="mb-1"><b>الصف:</b> ${data.grade || 'غير محدد'}</p>
+                    <p><b>الهاتف:</b> ${data.phone || 'غير محدد'}</p>
+                `;
+            } else {
+                alert('لم يتم العثور على طالب بهذا الكود!');
             }
         }
 
