@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة أكاديمية النبلاء</title>
+    <title>منصة أكاديمية النبلاء التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -66,20 +66,35 @@
             const grade = document.getElementById('addGrade').value;
             const phone = document.getElementById('addPhone').value;
 
-            const { error } = await supabase.from('student').insert([{ student_code: code, full_name: name, grade_level: grade, parent_phone: phone }]);
-            if (error) alert('خطأ في الحفظ: ' + error.message);
-            else alert('تمت إضافة الطالب بنجاح!');
+            if (!code || !name) {
+                alert('يرجى كتابة كود الطالب والاسم على الأقل');
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('students')
+                .insert([{ student_code: code, full_name: name, grade_level: grade, parent_phone: phone }]);
+
+            if (error) {
+                alert('خطأ في الحفظ: ' + error.message);
+            } else {
+                alert('تمت إضافة الطالب بنجاح!');
+                document.getElementById('addCode').value = '';
+                document.getElementById('addName').value = '';
+                document.getElementById('addGrade').value = '';
+                document.getElementById('addPhone').value = '';
+            }
         }
 
         async function fetchStudent() {
             const code = document.getElementById('sCode').value;
-            const { data, error } = await supabase.from('student').select('*').eq('student_code', code).single();
+            const { data, error } = await supabase.from('students').select('*').eq('student_code', code).single();
             const report = document.getElementById('studentReport');
             if (data) {
                 report.classList.remove('hidden');
                 report.innerHTML = `<p><b>الاسم:</b> ${data.full_name}</p><p><b>الصف:</b> ${data.grade_level}</p><p><b>رقم ولي الأمر:</b> ${data.parent_phone}</p>`;
             } else {
-                alert('لم يتم العثور على الطالب');
+                alert('لم يتم العثور على الطالب، تأكد من كود الطالب');
             }
         }
     </script>
