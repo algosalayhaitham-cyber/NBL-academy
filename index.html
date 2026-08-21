@@ -7,80 +7,118 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* إخفاء عناصر التحكم والأزرار عند حفظ أو طباعة الـ PDF */
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background: white;
-                padding: 0;
-            }
-            .shadow-lg {
-                box-shadow: none !important;
-            }
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .shadow-lg { box-shadow: none !important; }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans p-4">
-    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
-        <h1 class="text-2xl font-bold text-center text-blue-700 mb-6">منصة أكاديمية النبلاء التعليمية</h1>
+<body class="bg-gray-100 font-sans p-2 sm:p-4">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-6">
+        <h1 class="text-2xl font-bold text-center text-blue-800 mb-6">منصة أكاديمية النبلاء التعليمية</h1>
         
-        <!-- أزرار التنقل -->
-        <div class="flex justify-around mb-6 border-b pb-4 no-print">
+        <!-- أزرار التنقل الرئيسية -->
+        <div class="flex justify-around mb-6 border-b pb-4 no-print text-sm sm:text-base">
             <button onclick="showTab('admin')" id="btn-admin" class="font-bold text-blue-600 border-b-2 border-blue-600 pb-1">الإدارة</button>
             <button onclick="showTab('teacher')" id="btn-teacher" class="font-bold text-gray-500 pb-1">المعلم</button>
             <button onclick="showTab('student')" id="btn-student" class="font-bold text-gray-500 pb-1">الطالب / ولي الأمر</button>
         </div>
 
-        <!-- 1. لوحة الإدارة -->
-        <div id="tab-admin" class="tab-content space-y-4">
-            <h2 class="font-bold text-lg text-gray-800 no-print">إضافة طالب جديد</h2>
-            <input type="text" id="addCode" placeholder="كود الطالب (مثال: 1)" class="w-full p-2 border rounded no-print">
-            <input type="text" id="addName" placeholder="اسم الطالب الرباعي" class="w-full p-2 border rounded no-print">
-            <input type="text" id="addGrade" placeholder="الصف الدراسي" class="w-full p-2 border rounded no-print">
-            <input type="text" id="addPhone" placeholder="رقم ولي الأمر" class="w-full p-2 border rounded no-print">
-            <button onclick="addStudent()" class="w-full bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700 transition no-print">حفظ الطالب</button>
+        <!-- ==================== 1. لوحة الإدارة ==================== -->
+        <div id="tab-admin" class="tab-content space-y-6">
+            <!-- إضافة طالب -->
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 no-print space-y-3">
+                <h2 class="font-bold text-lg text-blue-900">إضافة طالب جديد</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input type="text" id="addCode" placeholder="كود الطالب (مثال: 101)" class="p-2 border rounded">
+                    <input type="text" id="addName" placeholder="اسم الطالب الرباعي" class="p-2 border rounded">
+                    <input type="text" id="addGrade" placeholder="الصف الدراسي" class="p-2 border rounded">
+                    <input type="text" id="addPhone" placeholder="رقم ولي الأمر" class="p-2 border rounded">
+                </div>
+                <button onclick="addStudent()" class="w-full bg-blue-700 text-white p-2 rounded font-bold hover:bg-blue-800">حفظ بيانات الطالب</button>
+            </div>
 
-            <!-- زر عرض وقائمة جميع الطلاب للطباعة -->
-            <hr class="my-4 no-print">
-            <div class="flex justify-between items-center no-print">
-                <button onclick="loadAllStudents()" class="bg-gray-800 text-white px-4 py-2 rounded font-bold hover:bg-gray-900">عرض كشف جميع الطلاب</button>
+            <!-- السجل المالي -->
+            <div class="bg-green-50 p-4 rounded-lg border border-green-200 no-print space-y-3">
+                <h2 class="font-bold text-lg text-green-900">رصد / تحديث الرسوم المالية</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" id="fCode" placeholder="كود الطالب" class="p-2 border rounded">
+                    <input type="number" id="fTotal" placeholder="إجمالي الرسوم" class="p-2 border rounded">
+                    <input type="number" id="fPaid" placeholder="المبلغ المدفوع" class="p-2 border rounded">
+                </div>
+                <button onclick="saveFee()" class="w-full bg-green-700 text-white p-2 rounded font-bold hover:bg-green-800">حفظ السجل المالي</button>
+            </div>
+
+            <!-- عرض الطباعة والتقارير -->
+            <div class="flex flex-wrap justify-between items-center gap-2 no-print">
+                <button onclick="loadAllStudents()" class="bg-gray-800 text-white px-4 py-2 rounded font-bold hover:bg-gray-900">عرض كشف الطلاب المسجلين</button>
                 <button onclick="window.print()" class="bg-red-600 text-white px-4 py-2 rounded font-bold hover:bg-red-700">تصدير / حفظ PDF 📄</button>
             </div>
             
             <div id="allStudentsTable" class="mt-4 hidden">
-                <h3 class="font-bold text-md mb-2 text-center text-gray-800">كشف أسماء الطلاب المسجلين</h3>
-                <table class="w-full border-collapse border border-gray-300 text-right text-sm">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-gray-300 p-2">الكود</th>
-                            <th class="border border-gray-300 p-2">الاسم</th>
-                            <th class="border border-gray-300 p-2">الصف</th>
-                            <th class="border border-gray-300 p-2">الهاتف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
-                    </tbody>
-                </table>
+                <h3 class="font-bold text-md mb-2 text-center text-gray-800">كشف أسماء الطلاب والبيانات المسجلة</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 text-right text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border border-gray-300 p-2">الكود</th>
+                                <th class="border border-gray-300 p-2">الاسم</th>
+                                <th class="border border-gray-300 p-2">الصف</th>
+                                <th class="border border-gray-300 p-2">الهاتف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- 2. حساب المعلم -->
+        <!-- ==================== 2. لوحة المعلم ==================== -->
         <div id="tab-teacher" class="tab-content hidden space-y-4 no-print">
-            <h2 class="font-bold text-lg text-gray-800">رصد الدرجات والحضور</h2>
+            <h2 class="font-bold text-lg text-gray-800">رصد التقييم الأكاديمي والحضور</h2>
             <input type="text" id="tCode" placeholder="كود الطالب" class="w-full p-2 border rounded">
-            <button onclick="saveRecord()" class="w-full bg-green-600 text-white p-2 rounded font-bold">رصد البيان</button>
+            <input type="text" id="tSubject" placeholder="المادة الدراسية" class="w-full p-2 border rounded">
+            <input type="number" id="tScore" placeholder="الدرجة" class="w-full p-2 border rounded">
+            <select id="tStatus" class="w-full p-2 border rounded">
+                <option value="حاضر">حاضر</option>
+                <option value="غائب">غائب</option>
+                <option value="مستأذن">مستأذن</option>
+            </select>
+            <input type="text" id="tNotes" placeholder="ملاحظات سلوكية / تعليمية" class="w-full p-2 border rounded">
+            <button onclick="saveTeacherRecord()" class="w-full bg-emerald-600 text-white p-2 rounded font-bold hover:bg-emerald-700">رصد وحفظ التقرير</button>
         </div>
 
-        <!-- 3. حساب الطالب وولي الأمر -->
+        <!-- ==================== 3. لوحة الطالب وولي الأمر ==================== -->
         <div id="tab-student" class="tab-content hidden space-y-4">
-            <h2 class="font-bold text-lg text-gray-800 no-print">متابعة ملف الطالب</h2>
-            <input type="text" id="sCode" placeholder="أدخل كود الطالب" class="w-full p-2 border rounded no-print">
-            <button onclick="fetchStudent()" class="w-full bg-indigo-600 text-white p-2 rounded font-bold no-print">عرض التقرير</button>
+            <h2 class="font-bold text-lg text-gray-800 no-print">استعلام ومتابعة ملف الطالب</h2>
+            <div class="flex gap-2 no-print">
+                <input type="text" id="sCode" placeholder="أدخل كود الطالب" class="w-full p-2 border rounded">
+                <button onclick="fetchStudentFullReport()" class="bg-indigo-600 text-white px-6 py-2 rounded font-bold hover:bg-indigo-700 whitespace-nowrap">عرض</button>
+            </div>
             
-            <div id="studentReport" class="p-4 bg-gray-50 border rounded hidden mt-4"></div>
-            <button id="btnPrintReport" onclick="window.print()" class="w-full bg-red-600 text-white p-2 rounded font-bold hidden no-print">حفظ التقرير PDF 📄</button>
+            <div id="studentReportArea" class="hidden space-y-4 border-t pt-4">
+                <div id="studentBasicInfo" class="p-4 bg-blue-50 border rounded"></div>
+                
+                <h3 class="font-bold text-md text-gray-800">الدرجات والملاحظات السلوكية</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 text-right text-sm">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border border-gray-300 p-2">المادة</th>
+                                <th class="border border-gray-300 p-2">الدرجة</th>
+                                <th class="border border-gray-300 p-2">الحضور</th>
+                                <th class="border border-gray-300 p-2">الملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentGradesBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="studentFeeInfo" class="p-4 bg-green-50 border rounded"></div>
+
+                <button onclick="window.print()" class="w-full bg-red-600 text-white p-2 rounded font-bold no-print hover:bg-red-700">حفظ التقرير PDF 📄</button>
+            </div>
         </div>
     </div>
 
@@ -101,24 +139,21 @@
             document.getElementById('btn-' + tabName).classList.remove('text-gray-500');
         }
 
+        // إضافة طالب جديد
         async function addStudent() {
             const code = document.getElementById('addCode').value.trim();
             const name = document.getElementById('addName').value.trim();
             const grade = document.getElementById('addGrade').value.trim();
             const phone = document.getElementById('addPhone').value.trim();
 
-            if (!code || !name) {
-                alert('يرجى إدخال الكود والاسم');
-                return;
-            }
+            if (!code || !name) { alert('يرجى إدخال الكود والاسم'); return; }
 
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('student')
                 .insert([{ id: code, name: name, grade: grade, phone: phone }]);
 
-            if (error) {
-                alert('حدث خطأ أثناء الحفظ: ' + error.message);
-            } else {
+            if (error) { alert('خطأ أثناء الحفظ: ' + error.message); } 
+            else {
                 alert('تم حفظ الطالب بنجاح!');
                 document.getElementById('addCode').value = '';
                 document.getElementById('addName').value = '';
@@ -127,19 +162,34 @@
             }
         }
 
-        async function loadAllStudents() {
-            const { data, error } = await supabaseClient
-                .from('student')
-                .select('*');
+        // حفظ الرسوم المالية
+        async function saveFee() {
+            const code = document.getElementById('fCode').value.trim();
+            const total = document.getElementById('fTotal').value;
+            const paid = document.getElementById('fPaid').value;
 
-            if (error) {
-                alert('خطأ في جلب البيانات: ' + error.message);
-                return;
+            if (!code) { alert('أدخل كود الطالب'); return; }
+
+            const { error } = await supabaseClient
+                .from('fees')
+                .insert([{ student_id: code, total_fee: total, paid_fee: paid }]);
+
+            if (error) { alert('خطأ أثناء الرصد المالي: ' + error.message); } 
+            else {
+                alert('تم حفظ البيانات المالية بنجاح!');
+                document.getElementById('fCode').value = '';
+                document.getElementById('fTotal').value = '';
+                document.getElementById('fPaid').value = '';
             }
+        }
+
+        // عرض قائمة الطلاب
+        async function loadAllStudents() {
+            const { data, error } = await supabaseClient.from('student').select('*');
+            if (error) { alert('خطأ: ' + error.message); return; }
 
             const tbody = document.getElementById('studentsTableBody');
             tbody.innerHTML = '';
-
             if (data && data.length > 0) {
                 data.forEach(s => {
                     tbody.innerHTML += `
@@ -148,45 +198,92 @@
                             <td class="border border-gray-300 p-2">${s.name || ''}</td>
                             <td class="border border-gray-300 p-2">${s.grade || ''}</td>
                             <td class="border border-gray-300 p-2">${s.phone || ''}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
                 document.getElementById('allStudentsTable').classList.remove('hidden');
-            } else {
-                alert('لا يوجد طلاب مسجلون بعد');
+            } else { alert('لا يوجد طلاب مسجلون'); }
+        }
+
+        // رصد المعلم
+        async function saveTeacherRecord() {
+            const code = document.getElementById('tCode').value.trim();
+            const subject = document.getElementById('tSubject').value.trim();
+            const score = document.getElementById('tScore').value;
+            const status = document.getElementById('tStatus').value;
+            const notes = document.getElementById('tNotes').value.trim();
+
+            if (!code || !subject) { alert('أدخل كود الطالب والمادة'); return; }
+
+            const { error } = await supabaseClient
+                .from('grades')
+                .insert([{ student_id: code, subject: subject, score: score, status: status, notes: notes }]);
+
+            if (error) { alert('خطأ في الرصد: ' + error.message); } 
+            else {
+                alert('تم رصد التقرير بنجاح!');
+                document.getElementById('tCode').value = '';
+                document.getElementById('tSubject').value = '';
+                document.getElementById('tScore').value = '';
+                document.getElementById('tNotes').value = '';
             }
         }
 
-        async function fetchStudent() {
+        // جلب تقرير الطالب المكتمل
+        async function fetchStudentFullReport() {
             const code = document.getElementById('sCode').value.trim();
             if (!code) { alert('يرجى إدخال كود الطالب'); return; }
 
-            const { data, error } = await supabaseClient
-                .from('student')
-                .select('*')
-                .eq('id', code)
-                .maybeSingle();
+            // جلب البيانات الأساسية
+            const { data: student } = await supabaseClient.from('student').select('*').eq('id', code).maybeSingle();
+            
+            if (!student) { alert('لم يتم العثور على طالب بهذا الكود!'); return; }
 
-            const report = document.getElementById('studentReport');
-            const btnPrint = document.getElementById('btnPrintReport');
+            // جلب الدرجات والحضور
+            const { data: grades } = await supabaseClient.from('grades').select('*').eq('student_id', code);
+            
+            // جلب الرسوم
+            const { data: fees } = await supabaseClient.from('fees').select('*').eq('student_id', code).order('id', { ascending: false }).limit(1).maybeSingle();
 
-            if (data) {
-                report.classList.remove('hidden');
-                btnPrint.classList.remove('hidden');
-                report.innerHTML = `
-                    <p class="mb-1"><b>الكود:</b> ${data.id}</p>
-                    <p class="mb-1"><b>الاسم:</b> ${data.name || 'غير محدد'}</p>
-                    <p class="mb-1"><b>الصف:</b> ${data.grade || 'غير محدد'}</p>
-                    <p><b>الهاتف:</b> ${data.phone || 'غير محدد'}</p>
+            // عرض البيانات الأساسية
+            document.getElementById('studentBasicInfo').innerHTML = `
+                <p><b>كود الطالب:</b> ${student.id}</p>
+                <p><b>الاسم:</b> ${student.name || 'غير محدد'}</p>
+                <p><b>الصف الدراسي:</b> ${student.grade || 'غير محدد'}</p>
+                <p><b>رقم التواصل:</b> ${student.phone || 'غير محدد'}</p>
+            `;
+
+            // عرض جدول الدرجات
+            const tbody = document.getElementById('studentGradesBody');
+            tbody.innerHTML = '';
+            if (grades && grades.length > 0) {
+                grades.forEach(g => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="border border-gray-300 p-2">${g.subject || '-'}</td>
+                            <td class="border border-gray-300 p-2">${g.score !== null ? g.score : '-'}</td>
+                            <td class="border border-gray-300 p-2">${g.status || '-'}</td>
+                            <td class="border border-gray-300 p-2">${g.notes || '-'}</td>
+                        </tr>`;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-gray-500">لا توجد سجلات أكاديمية مرصودة حتى الآن</td></tr>`;
+            }
+
+            // عرض الرسوم
+            if (fees) {
+                const remaining = (fees.total_fee || 0) - (fees.paid_fee || 0);
+                document.getElementById('studentFeeInfo').innerHTML = `
+                    <h4 class="font-bold mb-1 text-green-900">الموقف المالي:</h4>
+                    <p><b>إجمالي الرسوم:</b> ${fees.total_fee || 0}</p>
+                    <p><b>المبلغ المدفوع:</b> ${fees.paid_fee || 0}</p>
+                    <p><b>المتبقي:</b> <span class="${remaining > 0 ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}">${remaining}</span></p>
                 `;
             } else {
-                alert('لم يتم العثور على طالب بهذا الكود!');
-                report.classList.add('hidden');
-                btnPrint.classList.add('hidden');
+                document.getElementById('studentFeeInfo').innerHTML = `<p class="text-gray-500">لا يوجد سجل مالي مرصود</p>`;
             }
-        }
 
-        function saveRecord() { alert('تم حفظ السجل بنجاح!'); }
+            document.getElementById('studentReportArea').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
