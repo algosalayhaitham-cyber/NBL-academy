@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أكاديمية نبلاء اليمن الأهلية</title>
+    <title>أكاديمية نبلاء اليمن الأهلية - النظام المطور</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
-            .shadow-lg { box-shadow: none !important; }
+            .shadow-lg, .shadow-xl { box-shadow: none !important; }
         }
     </style>
 </head>
 <body class="bg-slate-100 font-sans p-2 sm:p-4 min-h-screen flex flex-col justify-between">
     
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full border border-gray-100">
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full border border-gray-100">
         
         <!-- الهيدر وشعار الأكاديمية -->
         <div class="flex flex-col items-center border-b pb-4 mb-6 text-center">
@@ -66,6 +66,26 @@
             <!-- ==================== لوحة الإدارة ==================== -->
             <div id="view-admin" class="role-view hidden space-y-6">
                 
+                <!-- [ميزة 1]: بطاقات الإحصائيات للإدارة -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print">
+                    <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl text-center">
+                        <p class="text-xs text-blue-700 font-bold">إجمالي الطلاب</p>
+                        <p id="statTotalStudents" class="text-xl font-extrabold text-blue-900 mt-1">...</p>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl text-center">
+                        <p class="text-xs text-green-700 font-bold">المبالغ المحصلة</p>
+                        <p id="statPaidFees" class="text-xl font-extrabold text-green-900 mt-1">...</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-center">
+                        <p class="text-xs text-amber-700 font-bold">المبالغ المتبقية</p>
+                        <p id="statRemFees" class="text-xl font-extrabold text-amber-900 mt-1">...</p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 p-3 rounded-xl text-center">
+                        <p class="text-xs text-purple-700 font-bold">نسبة الحضور اليوم</p>
+                        <p id="statAttendance" class="text-xl font-extrabold text-purple-900 mt-1">...</p>
+                    </div>
+                </div>
+
                 <div class="flex flex-wrap gap-2 border-b pb-3 no-print">
                     <button onclick="showAdminTab('students')" id="admin-tab-students" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-blue-800 text-white text-xs sm:text-sm shadow-sm transition">إدارة الطلاب والرسوم</button>
                     <button onclick="showAdminTab('messages'); loadAdminMessages();" id="admin-tab-messages" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">صندوق الملاحظات والردود 📩</button>
@@ -158,20 +178,34 @@
             <!-- ==================== لوحة المعلم ==================== -->
             <div id="view-teacher" class="role-view hidden space-y-6 no-print">
                 
-                <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-3 shadow-sm">
-                    <h2 class="font-bold text-lg text-emerald-900 border-b pb-2">رصد التقييم الأكاديمي والحضور</h2>
+                <!-- [ميزة 2]: الرصد الجماعي للمعلم -->
+                <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-4 shadow-sm">
+                    <h2 class="font-bold text-lg text-emerald-900 border-b pb-2">الرصد الجماعي السريع للصفوف ⚡</h2>
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="text" id="tCode" placeholder="كود الطالب" class="p-2 border rounded-lg">
-                        <input type="text" id="tSubject" placeholder="المادة الدراسية" class="p-2 border rounded-lg">
-                        <input type="number" id="tScore" placeholder="الدرجة" class="p-2 border rounded-lg">
-                        <select id="tStatus" class="p-2 border rounded-lg bg-white">
-                            <option value="حاضر">حاضر</option>
-                            <option value="غائب">غائب</option>
-                            <option value="مستأذن">مستأذن</option>
-                        </select>
+                        <input type="text" id="bulkGradeSearch" placeholder="أدخل اسم الصف (مثال: الخامس)" class="p-2 border rounded-lg">
+                        <input type="text" id="bulkSubject" placeholder="المادة الدراسية" class="p-2 border rounded-lg">
                     </div>
-                    <input type="text" id="tNotes" placeholder="ملاحظات سلوكية / تعليمية" class="w-full p-2 border rounded-lg">
-                    <button onclick="saveTeacherRecord()" class="w-full bg-emerald-700 text-white p-2.5 rounded-lg font-bold hover:bg-emerald-800 transition">رصد وحفظ التقرير</button>
+                    
+                    <button onclick="fetchClassStudentsForBulk()" class="bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-800 transition w-full">عرض كشف الطلاب للرصد</button>
+
+                    <div id="bulkRosterContainer" class="hidden space-y-3 mt-3">
+                        <div class="overflow-x-auto border rounded-lg">
+                            <table class="w-full text-sm text-right">
+                                <thead class="bg-emerald-50 text-emerald-900 font-bold">
+                                    <tr>
+                                        <th class="p-2 border">كود</th>
+                                        <th class="p-2 border">اسم الطالب</th>
+                                        <th class="p-2 border">الحضور</th>
+                                        <th class="p-2 border">الدرجة</th>
+                                        <th class="p-2 border">الملاحظات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulkRosterBody"></tbody>
+                            </table>
+                        </div>
+                        <button onclick="saveBulkGrades()" class="w-full bg-emerald-800 text-white p-3 rounded-lg font-bold hover:bg-emerald-900 transition shadow">حفظ ورصد جميع الطلاب دفعة واحدة 💾</button>
+                    </div>
                 </div>
 
                 <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3 shadow-sm">
@@ -213,6 +247,12 @@
                 <div id="studentReportArea" class="space-y-6">
                     
                     <div id="studentBasicInfo" class="p-4 bg-blue-50 border border-blue-200 rounded-xl"></div>
+
+                    <!-- [ميزة 3]: كشف لوحة تكريمات الطالب والأوسمة الرقمية -->
+                    <div class="p-4 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2">
+                        <h3 class="font-bold text-md text-amber-900 flex items-center gap-1">لوحة الأوسمة والتكريمات الأكاديمية 🏆</h3>
+                        <div id="badgesContainer" class="flex flex-wrap gap-2 pt-1"></div>
+                    </div>
 
                     <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-2">
                         <h3 class="font-bold text-md text-amber-900">الواجبات المدرسية المطلوبة 📚</h3>
@@ -273,7 +313,6 @@
         let currentStudentCode = '';
         let currentTeacherCode = '';
 
-        // تنزيل الصورة مباشرة
         function downloadImage(dataUrl, fileName = 'attachment.jpg') {
             const link = document.createElement('a');
             link.href = dataUrl;
@@ -283,7 +322,6 @@
             document.body.removeChild(link);
         }
 
-        // ضغط فائق للصور يحول الصورة لحجم بالغ الصغر (أقل من 3KB) ليتجاوز حدود Index Supabase بأمان تام
         function convertAndCompressImage(file) {
             return new Promise((resolve) => {
                 if (!file) resolve('');
@@ -294,19 +332,18 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const maxWidth = 180; // أبعاد مصغرة جدا لخفض حجم النص
+                        const maxWidth = 180;
                         const scaleSize = maxWidth / img.width;
                         canvas.width = (img.width > maxWidth) ? maxWidth : img.width;
                         canvas.height = (img.width > maxWidth) ? (img.height * scaleSize) : img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.2)); // ضغط الجودة لـ 20%
+                        resolve(canvas.toDataURL('image/jpeg', 0.2));
                     };
                 };
             });
         }
 
-        // بناء المرفق مع زر التنزيل
         function createAttachmentHtml(imgSrc) {
             if (!imgSrc) return '';
             return `
@@ -342,6 +379,7 @@
                 const pass = document.getElementById('loginPass').value;
                 if (pass === 'admin123') {
                     openDashboard('admin', 'حساب الإدارة العامة');
+                    loadAdminDashboardStats();
                 } else { alert('كلمة مرور الإدارة غير صحيحة!'); }
             } 
             else if (role === 'teacher') {
@@ -399,7 +437,35 @@
             document.getElementById('admin-tab-' + tab).classList.add('bg-blue-800', 'text-white');
         }
 
-        /* 1. خدمات الإدارة */
+        /* 1. خدمات الإدارة وحساب الإحصائيات */
+        async function loadAdminDashboardStats() {
+            const { data: stData } = await supabaseClient.from('student').select('id');
+            const { data: feesData } = await supabaseClient.from('fees').select('total_fee, paid_fee');
+            const { data: grData } = await supabaseClient.from('grades').select('status');
+
+            document.getElementById('statTotalStudents').innerText = stData ? stData.length : '0';
+
+            let paidSum = 0, remSum = 0;
+            if (feesData) {
+                feesData.forEach(f => {
+                    let total = f.total_fee || 0;
+                    let paid = f.paid_fee || 0;
+                    paidSum += paid;
+                    remSum += (total - paid);
+                });
+            }
+            document.getElementById('statPaidFees').innerText = paidSum;
+            document.getElementById('statRemFees').innerText = remSum;
+
+            if (grData && grData.length > 0) {
+                let presentCount = grData.filter(g => g.status === 'حاضر').length;
+                let attPct = Math.round((presentCount / grData.length) * 100);
+                document.getElementById('statAttendance').innerText = attPct + '%';
+            } else {
+                document.getElementById('statAttendance').innerText = '100%';
+            }
+        }
+
         async function addStudent() {
             const code = document.getElementById('addCode').value.trim();
             const name = document.getElementById('addName').value.trim();
@@ -415,6 +481,7 @@
                 alert('تم حفظ الطالب بنجاح!');
                 document.getElementById('addCode').value = '';
                 document.getElementById('addName').value = '';
+                loadAdminDashboardStats();
             }
         }
 
@@ -428,7 +495,10 @@
             const { error } = await supabaseClient.from('fees').insert([{ student_id: code, total_fee: total, paid_fee: paid }]);
 
             if (error) { alert('خطأ أثناء الرصد: ' + error.message); } 
-            else { alert('تم حفظ البيانات المالية بنجاح!'); }
+            else { 
+                alert('تم حفظ البيانات المالية بنجاح!'); 
+                loadAdminDashboardStats();
+            }
         }
 
         async function loadAllStudents() {
@@ -546,20 +616,77 @@
             }
         }
 
-        /* 2. خدمات المعلم */
-        async function saveTeacherRecord() {
-            const code = document.getElementById('tCode').value.trim();
-            const subject = document.getElementById('tSubject').value.trim();
-            const score = document.getElementById('tScore').value;
-            const status = document.getElementById('tStatus').value;
-            const notes = document.getElementById('tNotes').value.trim();
+        /* 2. خدمات المعلم والرصد الجماعي */
+        async function fetchClassStudentsForBulk() {
+            const grade = document.getElementById('bulkGradeSearch').value.trim();
+            const subject = document.getElementById('bulkSubject').value.trim();
 
-            if (!code || !subject) { alert('أدخل كود الطالب والمادة'); return; }
+            if (!grade || !subject) { alert('أدخل الصف واسم المادة'); return; }
 
-            const { error } = await supabaseClient.from('grades').insert([{ student_id: code, subject: subject, score: score, status: status, notes: notes }]);
+            const { data, error } = await supabaseClient.from('student').select('*').eq('grade', grade);
 
-            if (error) { alert('خطأ في الرصد: ' + error.message); } 
-            else { alert('تم رصد التقرير بنجاح!'); }
+            if (error || !data || data.length === 0) {
+                alert('لم يتم العثور على طلاب مسجلين في هذا الصف!');
+                return;
+            }
+
+            const tbody = document.getElementById('bulkRosterBody');
+            tbody.innerHTML = '';
+
+            data.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="border-b bulk-student-row" data-id="${s.id}">
+                        <td class="p-2 border font-bold">${s.id}</td>
+                        <td class="p-2 border font-semibold">${s.name}</td>
+                        <td class="p-2 border">
+                            <select class="bulk-status border rounded p-1 bg-white text-xs">
+                                <option value="حاضر">حاضر</option>
+                                <option value="غائب">غائب</option>
+                                <option value="مستأذن">مستأذن</option>
+                            </select>
+                        </td>
+                        <td class="p-2 border">
+                            <input type="number" class="bulk-score border rounded p-1 w-16 text-center text-xs" placeholder="الدرجة">
+                        </td>
+                        <td class="p-2 border">
+                            <input type="text" class="bulk-notes border rounded p-1 w-full text-xs" placeholder="ملاحظات...">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('bulkRosterContainer').classList.remove('hidden');
+        }
+
+        async function saveBulkGrades() {
+            const subject = document.getElementById('bulkSubject').value.trim();
+            const rows = document.querySelectorAll('.bulk-student-row');
+
+            let records = [];
+            rows.forEach(r => {
+                let studentId = r.getAttribute('data-id');
+                let status = r.querySelector('.bulk-status').value;
+                let scoreVal = r.querySelector('.bulk-score').value;
+                let notesVal = r.querySelector('.bulk-notes').value.trim();
+
+                records.push({
+                    student_id: studentId,
+                    subject: subject,
+                    score: scoreVal ? parseFloat(scoreVal) : null,
+                    status: status,
+                    notes: notesVal
+                });
+            });
+
+            if (records.length === 0) return;
+
+            const { error } = await supabaseClient.from('grades').insert(records);
+
+            if (error) { alert('خطأ في عملية الرصد: ' + error.message); }
+            else {
+                alert('تم رصد نتائج الصف بالكامل بنجاح! 🚀');
+                document.getElementById('bulkRosterContainer').classList.add('hidden');
+            }
         }
 
         async function sendHomework() {
@@ -645,7 +772,7 @@
             }
         }
 
-        /* 3. خدمات الطالب وولي الأمر */
+        /* 3. خدمات الطالب وولي الأمر ولوحة الأوسمة */
         async function fetchStudentFullReport(code) {
             const { data: student } = await supabaseClient.from('student').select('*').eq('id', code).maybeSingle();
             
@@ -661,6 +788,7 @@
                 <p><b>رقم التواصل:</b> ${student.phone || 'غير محدد'}</p>
             `;
 
+            renderBadges(grades);
             loadStudentHomeworks(student.grade);
             loadParentMessages(code);
 
@@ -687,6 +815,28 @@
             }
 
             return true;
+        }
+
+        function renderBadges(grades) {
+            const container = document.getElementById('badgesContainer');
+            container.innerHTML = '';
+
+            let badges = [
+                { name: 'وسام الانضباط والالتزام 🌟', bg: 'bg-amber-100 text-amber-800 border-amber-300' },
+                { name: 'برنامج أساس متين 🏗️', bg: 'bg-blue-100 text-blue-800 border-blue-300' }
+            ];
+
+            if (grades && grades.some(g => g.score >= 90)) {
+                badges.push({ name: 'وسام الخوارزمي للتفوق 🥇', bg: 'bg-yellow-100 text-yellow-800 border-yellow-400' });
+            }
+
+            if (grades && grades.filter(g => g.status === 'حاضر').length >= 3) {
+                badges.push({ name: 'نجم الصف والأخلاق ⭐', bg: 'bg-emerald-100 text-emerald-800 border-emerald-300' });
+            }
+
+            badges.forEach(b => {
+                container.innerHTML += `<span class="px-3 py-1 rounded-full text-xs font-bold border ${b.bg} shadow-sm">${b.name}</span>`;
+            });
         }
 
         async function loadStudentHomeworks(grade) {
@@ -770,3 +920,4 @@
     </script>
 </body>
 </html>
+ 
