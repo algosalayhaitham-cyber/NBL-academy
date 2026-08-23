@@ -43,6 +43,11 @@
                 <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
 
+            <div id="teacherCodeGroup" class="hidden">
+                <label class="block text-sm font-bold text-gray-700 mb-1">كود/رقم المعلم الخاص بك:</label>
+                <input type="text" id="loginTeacherCode" placeholder="أدخل كود المعلم (مثال: T101)" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+            </div>
+
             <div id="studentCodeGroup" class="hidden">
                 <label class="block text-sm font-bold text-gray-700 mb-1">كود الطالب:</label>
                 <input type="text" id="loginStudentCode" placeholder="أدخل كود الطالب الخاص بك" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
@@ -129,7 +134,7 @@
                                 <option value="teacher">إلى المعلمين</option>
                                 <option value="parent">إلى ولي أمر طالب</option>
                             </select>
-                            <input type="text" id="adminMsgCode" placeholder="كود الطالب (في حال ولي الأمر)" class="p-2 border rounded-lg bg-white">
+                            <input type="text" id="adminMsgCode" placeholder="كود المعلم أو كود الطالب المستهدف" class="p-2 border rounded-lg bg-white">
                         </div>
                         <textarea id="adminMsgText" placeholder="اكتب الملاحظة أو التوجيه هنا..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
                         <button onclick="sendAdminMessage()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">إرسال التوجيه</button>
@@ -185,7 +190,15 @@
                     <button onclick="sendHomework()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">إرسال الواجب المدرسـي 📤</button>
                 </div>
 
-                <!-- 3. إرسال ملاحظة للإدارة -->
+                <!-- 3. الملاحظات والتوجيهات الواردة من الإدارة -->
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3 shadow-sm">
+                    <h2 class="font-bold text-lg text-amber-900 border-b pb-2">التوجيهات والملاحظات الواردة من الإدارة 📩</h2>
+                    <div id="teacherReceivedMessagesList" class="space-y-2 text-sm">
+                        <p class="text-xs text-gray-500">جاري جلب الملاحظات...</p>
+                    </div>
+                </div>
+
+                <!-- 4. إرسال ملاحظة للإدارة -->
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3 shadow-sm">
                     <h2 class="font-bold text-lg text-gray-800 border-b pb-2">إرسال ملاحظة / استفسار للإدارة</h2>
                     <textarea id="teacherMsgText" placeholder="اكتب ملاحظتك الموجهة للفيادة والتوجيه الإداري..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
@@ -258,15 +271,22 @@
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         let currentStudentCode = '';
+        let currentTeacherCode = '';
 
         function toggleLoginFields() {
             const role = document.getElementById('userRole').value;
-            if (role === 'student') {
-                document.getElementById('passwordGroup').classList.add('hidden');
-                document.getElementById('studentCodeGroup').classList.remove('hidden');
-            } else {
+            
+            document.getElementById('passwordGroup').classList.add('hidden');
+            document.getElementById('studentCodeGroup').classList.add('hidden');
+            document.getElementById('teacherCodeGroup').classList.add('hidden');
+
+            if (role === 'admin') {
                 document.getElementById('passwordGroup').classList.remove('hidden');
-                document.getElementById('studentCodeGroup').classList.add('hidden');
+            } else if (role === 'teacher') {
+                document.getElementById('passwordGroup').classList.remove('hidden');
+                document.getElementById('teacherCodeGroup').classList.remove('hidden');
+            } else if (role === 'student') {
+                document.getElementById('studentCodeGroup').classList.remove('hidden');
             }
         }
 
@@ -281,8 +301,14 @@
             } 
             else if (role === 'teacher') {
                 const pass = document.getElementById('loginPass').value;
+                const teacherCode = document.getElementById('loginTeacherCode').value.trim();
+
+                if (!teacherCode) { alert('يرجى إدخال كود المعلم الخاص بك!'); return; }
+
                 if (pass === 'teacher123') {
-                    openDashboard('teacher', 'حساب الكادر التعليمي');
+                    currentTeacherCode = teacherCode;
+                    openDashboard('teacher', 'حساب الكادر التعليمي - كود المعلم: ' + teacherCode);
+                    loadTeacherReceivedMessages(teacherCode);
                 } else { alert('كلمة مرور المعلم غير صحيحة!'); }
             } 
             else if (role === 'student') {
@@ -311,7 +337,9 @@
             document.getElementById('loginSection').classList.remove('hidden');
             document.getElementById('loginPass').value = '';
             document.getElementById('loginStudentCode').value = '';
+            document.getElementById('loginTeacherCode').value = '';
             currentStudentCode = '';
+            currentTeacherCode = '';
         }
 
         /* تنقلات الإدارة */
@@ -373,7 +401,7 @@
             }
         }
 
-        // إرسال ملاحظة من الإدارة
+        // إرسال ملاحظة من الإدارة (سواء عامة أو معلم خاص أو ولي أمر)
         async function sendAdminMessage() {
             const target = document.getElementById('adminMsgTarget').value;
             const code = document.getElementById('adminMsgCode').value.trim();
@@ -392,6 +420,7 @@
             else {
                 alert('تم إرسال التوجيه بنجاح!');
                 document.getElementById('adminMsgText').value = '';
+                document.getElementById('adminMsgCode').value = '';
                 loadAdminMessages();
             }
         }
@@ -407,13 +436,13 @@
                 container.innerHTML = '';
                 data.forEach(m => {
                     let senderLabel = m.sender_type === 'parent' ? `ولي أمر الطالب (كود: ${m.student_id || 'غير محدد'})` : 
-                                     (m.sender_type === 'teacher' ? 'المعلم' : 'الإدارة');
+                                     (m.sender_type === 'teacher' ? `المعلم (كود: ${m.student_id || 'غير محدد'})` : 'الإدارة');
                     
                     container.innerHTML += `
                         <div class="p-3 border rounded-lg bg-gray-50 space-y-2">
                             <div class="flex justify-between text-xs font-bold text-gray-700">
                                 <span>من: ${senderLabel}</span>
-                                <span>إلى: ${m.target_type || 'عام'}</span>
+                                <span>إلى: ${m.target_type || 'عام'} ${m.student_id ? `(كود: ${m.student_id})` : ''}</span>
                             </div>
                             <p class="text-sm font-semibold text-gray-800">${m.message}</p>
                             
@@ -502,6 +531,34 @@
             }
         }
 
+        async function loadTeacherReceivedMessages(teacherCode) {
+            const container = document.getElementById('teacherReceivedMessagesList');
+            const { data, error } = await supabaseClient
+                .from('messages')
+                .select('*')
+                .or(`and(target_type.eq.teacher,student_id.is.null),and(target_type.eq.teacher,student_id.eq.${teacherCode})`)
+                .order('id', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-500 text-center">لا توجد ملاحظات أو توجيهات موجهة لك حالياً</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(m => {
+                const isPrivate = m.student_id === teacherCode;
+                container.innerHTML += `
+                    <div class="p-3 border rounded-lg ${isPrivate ? 'bg-amber-100 border-amber-300' : 'bg-white'} space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-xs text-amber-900">توجيه من الإدارة:</span>
+                            ${isPrivate ? '<span class="bg-amber-700 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">خاص بك</span>' : '<span class="bg-gray-200 text-gray-700 text-[10px] px-2 py-0.5 rounded-full font-bold">عام لجميع المعلمين</span>'}
+                        </div>
+                        <p class="text-gray-800 text-sm font-medium mt-1">${m.message}</p>
+                    </div>
+                `;
+            });
+        }
+
         async function sendTeacherToAdminMsg() {
             const text = document.getElementById('teacherMsgText').value.trim();
             if (!text) { alert('اكتب نص الملاحظة'); return; }
@@ -509,6 +566,7 @@
             const { error } = await supabaseClient.from('messages').insert([{
                 sender_type: 'teacher',
                 target_type: 'admin',
+                student_id: currentTeacherCode || null,
                 message: text
             }]);
 
