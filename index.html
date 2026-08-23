@@ -273,7 +273,17 @@
         let currentStudentCode = '';
         let currentTeacherCode = '';
 
-        // دالة ضغط الصور وتحويلها يدوياً لـ Base64 خفيف
+        // دالة تنزيل الصور مباشرة
+        function downloadImage(dataUrl, fileName = 'attachment.jpg') {
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ضغط عالي للصور لتجنب خطأ الـ Index Row Size في Supabase
         function convertAndCompressImage(file) {
             return new Promise((resolve) => {
                 if (!file) resolve('');
@@ -284,16 +294,29 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const maxWidth = 500;
+                        const maxWidth = 350; // تقليل العرض لتقليل الحجم بشكل كبير
                         const scaleSize = maxWidth / img.width;
                         canvas.width = (img.width > maxWidth) ? maxWidth : img.width;
                         canvas.height = (img.width > maxWidth) ? (img.height * scaleSize) : img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                        resolve(canvas.toDataURL('image/jpeg', 0.4)); // ضغط جودة 40%
                     };
                 };
             });
+        }
+
+        // دالة بناء هضم المرفقات مع زر التحميل المباشر
+        function createAttachmentHtml(imgSrc) {
+            if (!imgSrc) return '';
+            return `
+                <div class="mt-2 space-y-1">
+                    <img src="${imgSrc}" class="max-h-48 rounded-lg border shadow-sm my-1">
+                    <button onclick="downloadImage('${imgSrc}', 'image_${Date.now()}.jpg')" class="bg-slate-700 text-white text-[10px] px-2.5 py-1 rounded-md font-bold hover:bg-slate-800 transition inline-flex items-center gap-1">
+                        💾 تنزيل الصورة
+                    </button>
+                </div>
+            `;
         }
 
         function toggleLoginFields() {
@@ -432,7 +455,7 @@
 
             if (imageFile) {
                 const imgData = await convertAndCompressImage(imageFile);
-                text += `<br><img src="${imgData}" class="max-h-48 rounded-lg border shadow-sm my-2">`;
+                text += createAttachmentHtml(imgData);
             }
 
             const { error } = await supabaseClient.from('messages').insert([{
@@ -549,7 +572,7 @@
 
             if (imageFile) {
                 const imgData = await convertAndCompressImage(imageFile);
-                text += `<br><img src="${imgData}" class="max-h-52 rounded-lg border shadow-sm my-2">`;
+                text += createAttachmentHtml(imgData);
             }
 
             const { error } = await supabaseClient.from('homeworks').insert([{ 
@@ -604,7 +627,7 @@
 
             if (imageFile) {
                 const imgData = await convertAndCompressImage(imageFile);
-                text += `<br><img src="${imgData}" class="max-h-48 rounded-lg border shadow-sm my-2">`;
+                text += createAttachmentHtml(imgData);
             }
 
             const { error } = await supabaseClient.from('messages').insert([{
@@ -696,7 +719,7 @@
 
             if (imageFile) {
                 const imgData = await convertAndCompressImage(imageFile);
-                text += `<br><img src="${imgData}" class="max-h-48 rounded-lg border shadow-sm my-2">`;
+                text += createAttachmentHtml(imgData);
             }
 
             const { error } = await supabaseClient.from('messages').insert([{
@@ -718,7 +741,6 @@
         async function loadParentMessages(code) {
             const container = document.getElementById('parentMessagesList');
             
-            // جلب الرسائل الخاصة بولي الأمر فقط (تمنع ظهور أي رسائل خاصة بالمعلم أو الإدارة)
             const { data, error } = await supabaseClient
                 .from('messages')
                 .select('*')
@@ -748,4 +770,3 @@
     </script>
 </body>
 </html>
- 
