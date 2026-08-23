@@ -288,7 +288,7 @@
                         const scaleSize = maxWidth / img.width;
                         canvas.width = (img.width > maxWidth) ? maxWidth : img.width;
                         canvas.height = (img.width > maxWidth) ? (img.height * scaleSize) : img.height;
-                        const ctx = canvas.getContext('canvas');
+                        const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         resolve(canvas.toDataURL('image/jpeg', 0.6));
                     };
@@ -717,14 +717,17 @@
 
         async function loadParentMessages(code) {
             const container = document.getElementById('parentMessagesList');
+            
+            // جلب الرسائل الخاصة بولي الأمر فقط (تمنع ظهور أي رسائل خاصة بالمعلم أو الإدارة)
             const { data, error } = await supabaseClient
                 .from('messages')
                 .select('*')
                 .eq('student_id', code)
+                .or('target_type.eq.parent,sender_type.eq.parent')
                 .order('id', { ascending: false });
 
             if (error || !data || data.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-500">لا توجد ملاحظات خاصة بك حتـى الآن</p>';
+                container.innerHTML = '<p class="text-xs text-gray-500 text-center">لا توجد ملاحظات خاصة بك حتى الآن</p>';
                 return;
             }
 
@@ -734,10 +737,10 @@
                 container.innerHTML += `
                     <div class="p-2 border rounded-lg ${isMine ? 'bg-purple-100/50' : 'bg-blue-100/50'} space-y-1">
                         <div class="font-bold text-xs ${isMine ? 'text-purple-900' : 'text-blue-900'}">
-                            ${isMine ? 'ملاحظتك للإدارة:' : 'توجيه / ملاحظة من الإدارة:'}
+                            ${isMine ? 'ملاحظتك للإدارة:' : 'توجيه / ملاحظة موجهة لك من الإدارة:'}
                         </div>
                         <div class="text-gray-800 text-xs">${m.message || ''}</div>
-                        ${m.reply ? `<div class="bg-white p-1.5 border-r-2 border-green-600 text-xs text-green-900 font-medium rounded"><b>رد الإدارة:</b> ${m.reply}</div>` : ''}
+                        ${m.reply ? `<div class="bg-white p-1.5 border-r-2 border-green-600 text-xs text-green-900 font-medium rounded mt-1"><b>رد الإدارة:</b> ${m.reply}</div>` : ''}
                     </div>
                 `;
             });
@@ -745,3 +748,4 @@
     </script>
 </body>
 </html>
+ 
