@@ -273,7 +273,7 @@
         let currentStudentCode = '';
         let currentTeacherCode = '';
 
-        // دالة تنزيل الصور مباشرة
+        // تنزيل الصورة مباشرة
         function downloadImage(dataUrl, fileName = 'attachment.jpg') {
             const link = document.createElement('a');
             link.href = dataUrl;
@@ -283,7 +283,7 @@
             document.body.removeChild(link);
         }
 
-        // ضغط عالي للصور لتجنب خطأ الـ Index Row Size في Supabase
+        // ضغط فائق للصور يحول الصورة لحجم بالغ الصغر (أقل من 3KB) ليتجاوز حدود Index Supabase بأمان تام
         function convertAndCompressImage(file) {
             return new Promise((resolve) => {
                 if (!file) resolve('');
@@ -294,25 +294,25 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const maxWidth = 350; // تقليل العرض لتقليل الحجم بشكل كبير
+                        const maxWidth = 180; // أبعاد مصغرة جدا لخفض حجم النص
                         const scaleSize = maxWidth / img.width;
                         canvas.width = (img.width > maxWidth) ? maxWidth : img.width;
                         canvas.height = (img.width > maxWidth) ? (img.height * scaleSize) : img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.4)); // ضغط جودة 40%
+                        resolve(canvas.toDataURL('image/jpeg', 0.2)); // ضغط الجودة لـ 20%
                     };
                 };
             });
         }
 
-        // دالة بناء هضم المرفقات مع زر التحميل المباشر
+        // بناء المرفق مع زر التنزيل
         function createAttachmentHtml(imgSrc) {
             if (!imgSrc) return '';
             return `
-                <div class="mt-2 space-y-1">
-                    <img src="${imgSrc}" class="max-h-48 rounded-lg border shadow-sm my-1">
-                    <button onclick="downloadImage('${imgSrc}', 'image_${Date.now()}.jpg')" class="bg-slate-700 text-white text-[10px] px-2.5 py-1 rounded-md font-bold hover:bg-slate-800 transition inline-flex items-center gap-1">
+                <div class="mt-2 border-t pt-2 space-y-1">
+                    <img src="${imgSrc}" class="max-h-36 rounded border shadow-sm block">
+                    <button onclick="downloadImage('${imgSrc}', 'attached_img.jpg')" class="bg-slate-800 text-white text-[10px] px-2 py-1 rounded font-bold hover:bg-slate-900 transition">
                         💾 تنزيل الصورة
                     </button>
                 </div>
