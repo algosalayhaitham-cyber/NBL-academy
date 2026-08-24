@@ -264,7 +264,7 @@
                         <input type="text" id="exMemo" placeholder="كشف الحفظ المطلوب (مثال: سورة الملك من 1-15)" class="w-full p-2 border rounded-lg bg-white">
                         <textarea id="exInstructions" placeholder="تنبيهات ومتطلبات الاختبار..." class="w-full p-2 border rounded-lg h-16 bg-white"></textarea>
                         
-                        <!-- إضافة رفع صورة للاختبار/المقرر -->
+                        <!-- إرفاق صورة للاختبار/المقرر -->
                         <div class="bg-white p-2 rounded-lg border">
                             <label class="block text-xs font-bold text-gray-700 mb-1">📷 إرفاق صورة جدول الاختبار أو مقرر الحفظ:</label>
                             <input type="file" id="exFile" class="text-xs" accept="image/*">
@@ -406,7 +406,7 @@
                     <button onclick="grantBadgeToStudent()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">منح الوسام للطالب 🎖️</button>
                 </div>
 
-                <!-- إضافة واجب مدرسي محدّث مع رفع صورة من الجهاز مباشرة -->
+                <!-- إضافة واجب مدرسي محدّث مع رفع صورة -->
                 <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3 shadow-sm">
                     <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص مع صورة 🖼️</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -440,6 +440,14 @@
                 <div id="studentReportArea" class="space-y-6">
                     
                     <div id="studentBasicInfo" class="p-4 bg-blue-50 border border-blue-200 rounded-xl"></div>
+
+                    <!-- صندوق الملاحظات والرسائل الواردة لولي الأمر / الطالب -->
+                    <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-xl space-y-2">
+                        <h3 class="font-bold text-md text-amber-900 flex items-center gap-1">الملاحظات والتوجيهات الإدارية الواردة 📩</h3>
+                        <div id="studentMessagesContainer" class="space-y-2 text-xs">
+                            <p class="text-gray-500">جاري تحميل الرسائل...</p>
+                        </div>
+                    </div>
 
                     <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-xl space-y-2">
                         <h3 class="font-bold text-md text-teal-900 flex items-center gap-1">سجل الحضور والغياب اليومي 📌</h3>
@@ -1118,6 +1126,34 @@
             }
         }
 
+        /* جلب الملاحظات والرسائل الموجهة للطالب / ولي الأمر */
+        async function loadStudentMessages(code) {
+            const container = document.getElementById('studentMessagesContainer');
+            if (!container) return;
+
+            const { data } = await supabaseClient.from('messages').select('*').eq('target_type', 'parent');
+
+            container.innerHTML = '';
+            if (data && data.length > 0) {
+                const myMsgs = data.filter(m => !m.target_code || m.target_code === code);
+                if (myMsgs.length > 0) {
+                    myMsgs.forEach(m => {
+                        let imgHtml = m.image_url ? `<div class="mt-2"><img src="${m.image_url}" class="max-h-40 rounded border shadow-sm"></div>` : '';
+                        container.innerHTML += `
+                            <div class="p-3 border rounded-lg bg-white text-xs space-y-1 shadow-sm">
+                                <p class="text-gray-800 font-semibold">${m.message_text}</p>
+                                ${imgHtml}
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500">لا توجد ملاحظات أو توجيهات موجهة لك حالياً</p>';
+                }
+            } else {
+                container.innerHTML = '<p class="text-gray-500">لا توجد ملاحظات مسجلة</p>';
+            }
+        }
+
         /* الأوسمة */
         async function grantAdminBadge() {
             const code = document.getElementById('adminBadgeStudentCode').value.trim();
@@ -1178,6 +1214,7 @@
                 <p><b>الصف الدراسي:</b> ${student.grade || '-'}</p>
             `;
 
+            loadStudentMessages(code);
             loadStudentAttendance(code);
             loadStudentBadges(code);
             loadStudentExams(student.grade);
@@ -1344,4 +1381,3 @@
     </script>
 </body>
 </html>
- 
