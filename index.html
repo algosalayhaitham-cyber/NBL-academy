@@ -13,6 +13,65 @@
             .shadow-lg, .shadow-xl, .shadow-md { box-shadow: none !important; }
             .printable-area { border: none !important; padding: 0 !important; }
         }
+
+        /* تنسيقات كود الفقرات والصور المدمج */
+        .paragraph-card {
+            background: #fafafa;
+            border: 1px solid #e1e4e8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .paragraph-card textarea {
+            width: 100%;
+            height: 80px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        .file-upload-btn {
+            background-color: #16a34a;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .preview-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .preview-container img {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .remove-img-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .saved-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans p-2 sm:p-4 min-h-screen flex flex-col justify-between">
@@ -90,6 +149,7 @@
                 <!-- شريط التنقل الإداري -->
                 <div class="flex flex-wrap gap-2 border-b pb-3 no-print">
                     <button onclick="showAdminTab('students')" id="admin-tab-students" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-blue-800 text-white text-xs sm:text-sm shadow-sm transition">الطلاب والتصفية 👥</button>
+                    <button onclick="showAdminTab('paragraphs')" id="admin-tab-paragraphs" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">إدارة الصور والفقرات 🖼️</button>
                     <button onclick="showAdminTab('badges')" id="admin-tab-badges" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">إدارة الأوسمة 🏆</button>
                     <button onclick="showAdminTab('exams')" id="admin-tab-exams" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الاختبارات والحفظ 📅</button>
                     <button onclick="showAdminTab('messages'); loadAdminMessages();" id="admin-tab-messages" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الملاحظات والرسائل 📩</button>
@@ -147,6 +207,33 @@
                                 </thead>
                                 <tbody id="studentsTableBody"></tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== تبويب مدمج: إدارة الفقرات والصور المباشرة ==================== -->
+                <div id="admin-sub-paragraphs" class="admin-sub-content hidden space-y-6">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                        <h2 class="font-bold text-lg text-slate-800 border-b pb-2">إضافة وإنشاء الفقرات والصور (Supabase Storage) 🖼️</h2>
+                        
+                        <form id="paragraphsForm" onsubmit="saveAllParagraphs(event)">
+                            <div id="paragraphsList">
+                                <!-- يتم إضافة حقول الفقرات هنا ديناميكيًا -->
+                            </div>
+
+                            <div class="flex gap-2 mt-3">
+                                <button type="button" class="flex-1 bg-gray-600 text-white p-2 rounded-lg font-bold text-sm hover:bg-gray-700 transition" onclick="addParagraph()">+ إضافة فقرة جديد</button>
+                                <button type="submit" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold text-sm hover:bg-blue-800 transition">💾 رفع وحفظ الكل</button>
+                            </div>
+                        </form>
+
+                        <div id="loadingOverlay" class="hidden text-center text-blue-700 font-bold py-2">جاري رفع الصور وحفظ البيانات إلى Supabase... ⏳</div>
+
+                        <button type="button" class="w-full bg-teal-700 text-white p-2.5 rounded-lg font-bold text-sm hover:bg-teal-800 transition mt-4" onclick="fetchSavedParagraphs()">📥 تحميل واستعراض الفقرات المحفوظة</button>
+
+                        <div id="savedSection" class="hidden mt-4 border-t pt-4">
+                            <h3 class="font-bold text-md text-gray-800 mb-3">الفقرات المحفوظة من قاعدة البيانات:</h3>
+                            <div id="savedContainer"></div>
                         </div>
                     </div>
                 </div>
@@ -309,7 +396,7 @@
                     <button onclick="grantBadgeToStudent()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">منح الوسام للطالب 🎖️</button>
                 </div>
 
-                <!-- قسم إرسال واجب مدرسي مخصص (محدث مع ميزة إرفاق الصورة) -->
+                <!-- قسم إرسال واجب مدرسي مخصص -->
                 <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3 shadow-sm">
                     <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص 🖼️</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -318,7 +405,6 @@
                     </div>
                     <textarea id="hwText" placeholder="تفاصيل الواجب الدراسي والشروط المطلوبة..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
                     
-                    <!-- حقل إضافة رابط صورة للواجب (تحديث جديد) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">رابط صورة الواجب / التوضيح (اختياري):</label>
                         <input type="url" id="hwImage" placeholder="https://example.com/image.jpg" class="w-full p-2 border rounded-lg bg-white text-xs dir-ltr">
@@ -429,14 +515,19 @@
         const supabaseKey = 'sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        const BUCKET_NAME = "paragraph-images"; // اسم Storage Bucket للصور
+        const TABLE_NAME = "paragraphs";         // اسم جدول الفقرات
+
         let currentStudentCode = '';
         let currentTeacherCode = '';
+        let paragraphCount = 0;
 
-        // تحديد تاريخ اليوم تلقائياً
+        // تحديد تاريخ اليوم تلقائياً وإضافة أول فقرة
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date().toISOString().split('T')[0];
             const attDateInput = document.getElementById('attDate');
             if (attDateInput) attDateInput.value = today;
+            addParagraph();
         });
 
         const sampleQuestionBank = [
@@ -515,6 +606,149 @@
             });
             document.getElementById('admin-tab-' + tab).classList.remove('bg-gray-200', 'text-gray-700');
             document.getElementById('admin-tab-' + tab).classList.add('bg-blue-800', 'text-white');
+        }
+
+        /* ------------------ إدارة الفقرات والصور الديناميكية ------------------ */
+        function addParagraph() {
+            paragraphCount++;
+            const list = document.getElementById('paragraphsList');
+            const card = document.createElement('div');
+            card.className = 'paragraph-card';
+            card.id = `paragraph-${paragraphCount}`;
+
+            card.innerHTML = `
+                <button type="button" class="text-red-600 text-xs font-bold float-left mb-1" onclick="this.parentElement.remove()">حذف الفقرة ✕</button>
+                <textarea placeholder="اكتب نص الفقرة أو الشرح هنا..." required></textarea>
+                
+                <div class="flex items-center gap-2 mt-2">
+                    <label for="file-${paragraphCount}" class="file-upload-btn">📷 اختيار صورة مرفقة</label>
+                    <input type="file" id="file-${paragraphCount}" class="hidden" accept="image/*" onchange="handleImageUpload(event, this)">
+                </div>
+
+                <div class="image-preview"></div>
+            `;
+            list.appendChild(card);
+        }
+
+        function handleImageUpload(event, inputElement) {
+            const file = event.target.files[0];
+            const previewContainer = inputElement.parentElement.nextElementSibling;
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `
+                        <div class="preview-container">
+                            <img src="${e.target.result}" alt="معاينة الصورة">
+                            <button type="button" class="remove-img-btn" onclick="clearImage(this)">×</button>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearImage(buttonElement) {
+            const previewWrapper = buttonElement.closest('.image-preview');
+            const inputElement = previewWrapper.previousElementSibling.querySelector('input[type="file"]');
+            previewWrapper.innerHTML = '';
+            inputElement.value = '';
+        }
+
+        async function saveAllParagraphs(event) {
+            event.preventDefault();
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.remove('hidden');
+
+            const cards = document.querySelectorAll('.paragraph-card');
+            if (cards.length === 0) {
+                alert('يرجى إضافة فقرة واحدة على الأقل.');
+                loading.classList.add('hidden');
+                return;
+            }
+
+            try {
+                for (let card of cards) {
+                    const textContent = card.querySelector('textarea').value;
+                    const fileInput = card.querySelector('input[type="file"]');
+                    const file = fileInput.files[0];
+                    let imageUrl = null;
+
+                    if (file) {
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+                        const filePath = `uploads/${fileName}`;
+
+                        const { error: uploadError } = await supabaseClient.storage
+                            .from(BUCKET_NAME)
+                            .upload(filePath, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: publicUrlData } = supabaseClient.storage
+                            .from(BUCKET_NAME)
+                            .getPublicUrl(filePath);
+
+                        imageUrl = publicUrlData.publicUrl;
+                    }
+
+                    const { error: insertError } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .insert([{ content: textContent, image_url: imageUrl }]);
+
+                    if (insertError) throw insertError;
+                }
+
+                alert('تم رفع الصور وحفظ الفقرات بنجاح! 🎉');
+                document.getElementById('paragraphsList').innerHTML = '';
+                addParagraph();
+            } catch (err) {
+                console.error(err);
+                alert('حدث خطأ أثناء الحفظ: ' + err.message);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        async function fetchSavedParagraphs() {
+            const container = document.getElementById('savedContainer');
+            const section = document.getElementById('savedSection');
+            container.innerHTML = '<p class="text-xs text-blue-600">جاري التحميل...</p>';
+            section.classList.remove('hidden');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="text-xs text-gray-500">لا توجد فقرات محفوظة حاليًا.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'saved-item';
+                    
+                    let imgHtml = item.image_url 
+                        ? `<img src="${item.image_url}" alt="صورة الفقرة" class="max-h-48 rounded mt-2 border">` 
+                        : '';
+
+                    itemDiv.innerHTML = `
+                        <p class="text-sm font-semibold text-gray-800">${item.content}</p>
+                        ${imgHtml}
+                    `;
+                    container.appendChild(itemDiv);
+                });
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<p class="text-xs text-red-600">فشل في تحميل البيانات.</p>';
+            }
         }
 
         /* ------------------ إدارة الحضور والغياب ------------------ */
@@ -764,7 +998,7 @@
             else alert('تم إرسال السؤال كواجب للمرحلة بنجاح!');
         }
 
-        /* إرسال الواجب المدرسي مع دعم مرفق صورة */
+        /* إرسال الواجب المدرسي */
         async function sendHomework() {
             const grade = document.getElementById('hwGrade').value.trim();
             const subject = document.getElementById('hwSubject').value.trim();
@@ -931,7 +1165,6 @@
             } else { container.innerHTML = '<p class="text-gray-500">لا توجد اختبارات محددة حالياً</p>'; }
         }
 
-        /* عرض الواجبات مع إمكانية عرض الصور المرفقة */
         async function loadStudentHomeworks(grade) {
             const container = document.getElementById('studentHomeworkList');
             const { data } = await supabaseClient.from('homeworks').select('*').eq('grade', grade);
