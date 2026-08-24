@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أكاديمية نبلاء اليمن الأهلية - النظام المطور مع ميزة الردود</title>
+    <title>أكاديمية نبلاء اليمن الأهلية - النظام المطور والكامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -91,7 +91,7 @@
             <p class="text-xs text-gray-500 mt-0.5">إشراف وإعداد: الأستاذ هيثم علي صالح القصلي</p>
         </div>
 
-        <!-- 1. شاشة تسجيل الدخول -->
+        <!-- 1. شاشة تسجيل الدخول واستعادة الحساب -->
         <div id="loginSection" class="space-y-4 max-w-md mx-auto my-6 p-6 border rounded-xl bg-gradient-to-b from-blue-50 to-indigo-50/30 shadow-sm no-print">
             <h2 class="text-xl font-bold text-center text-blue-900 mb-4">تسجيل الدخول للنظام</h2>
             
@@ -120,6 +120,31 @@
             </div>
 
             <button onclick="handleLogin()" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow">دخول النظام</button>
+
+            <!-- زر ونافذة استعادة كلمة المرور -->
+            <div class="text-center pt-2">
+                <button type="button" onclick="toggleResetPasswordModal(true)" class="text-xs text-blue-700 hover:underline font-bold">نسيت كلمة المرور؟ استعادة الحساب 🔑</button>
+            </div>
+        </div>
+
+        <!-- نافذة استعادة كلمة المرور Modal -->
+        <div id="resetPasswordModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+                <h3 class="font-bold text-lg text-blue-900 border-b pb-2 text-center">طلب استعادة كلمة المرور 🔑</h3>
+                <p class="text-xs text-gray-600 leading-relaxed">أدخل الكود الخاص بك ورقم الهاتف المسجل لدى الأكاديمية لإرسال طلب الاستعادة للإدارة:</p>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">الكود الخاص بك:</label>
+                    <input type="text" id="resetCode" placeholder="أدخل الكود الخاص بك" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">رقم الهاتف المسجل:</label>
+                    <input type="text" id="resetPhone" placeholder="أدخل رقم الهاتف" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="submitPasswordResetRequest()" class="flex-1 bg-blue-900 text-white p-2 rounded-lg font-bold text-xs hover:bg-blue-800">إرسال الطلب</button>
+                    <button onclick="toggleResetPasswordModal(false)" class="flex-1 bg-gray-200 text-gray-800 p-2 rounded-lg font-bold text-xs hover:bg-gray-300">إلغاء</button>
+                </div>
+            </div>
         </div>
 
         <!-- 2. الواجهة الرئيسية -->
@@ -159,6 +184,8 @@
                     <button onclick="showAdminTab('badges')" id="admin-tab-badges" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">إدارة الأوسمة 🏆</button>
                     <button onclick="showAdminTab('exams')" id="admin-tab-exams" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الاختبارات والحفظ 📅</button>
                     <button onclick="showAdminTab('messages'); loadAdminMessages();" id="admin-tab-messages" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الملاحظات والرسائل والردود 📩</button>
+                    <button onclick="showAdminTab('posts'); loadPosts();" id="admin-tab-posts" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الإعلانات والمنشورات 📢</button>
+                    <button onclick="showAdminTab('transactions'); loadTransactions();" id="admin-tab-transactions" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">سجل المعاملات والتوثيق 📜</button>
                 </div>
 
                 <!-- تبويب 1: الطلاب -->
@@ -309,6 +336,71 @@
                     </div>
                 </div>
 
+                <!-- تبويب الإعلانات والمنشورات -->
+                <div id="admin-sub-posts" class="admin-sub-content hidden space-y-6">
+                    <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 space-y-3">
+                        <h3 class="font-bold text-lg text-indigo-900">نشر إعلان / خبر جديد للأكاديمية 📢</h3>
+                        <input type="text" id="postTitle" placeholder="عنوان الإعلان / الخبر" class="w-full p-2 border rounded-lg bg-white text-xs">
+                        <textarea id="postContent" placeholder="تفاصيل الإعلان أو الخبر..." class="w-full p-2 border rounded-lg h-24 bg-white text-xs"></textarea>
+                        <div class="bg-white p-2 rounded-lg border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">📷 صورة الإعلان (اختياري):</label>
+                            <input type="file" id="postFile" class="text-xs" accept="image/*">
+                        </div>
+                        <button onclick="createNewPost()" class="w-full bg-indigo-800 text-white p-2.5 rounded-lg font-bold text-xs hover:bg-indigo-900">نشر الإعلان للجميع 🚀</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="font-bold text-md text-gray-800">الإعلانات المنشورة سابقاً:</h3>
+                        <div id="adminPostsContainer" class="space-y-3">
+                            <p class="text-xs text-gray-500">جاري تحميل المنشورات...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب سجل المعاملات والتوثيق الإداري -->
+                <div id="admin-sub-transactions" class="admin-sub-content hidden space-y-6">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h3 class="font-bold text-lg text-slate-800">توثيق معاملة / إجراء إداري جديد 📜</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="text" id="txTitle" placeholder="عنوان المعاملة (مثال: طلب نقل طالب)" class="p-2 border rounded-lg bg-white text-xs">
+                            <select id="txType" class="p-2 border rounded-lg bg-white text-xs font-bold">
+                                <option value="إدارية">معاملة إدارية 🏛️</option>
+                                <option value="مالية">معاملة مالية 💰</option>
+                                <option value="أكاديمية">معاملة أكاديمية 🎓</option>
+                                <option value="طلب ولي أمر">طلب / شكوى ولي أمر 📩</option>
+                            </select>
+                        </div>
+                        <input type="text" id="txStudentCode" placeholder="كود الطالب المعني (إن وجد)" class="w-full p-2 border rounded-lg bg-white text-xs">
+                        <textarea id="txDetails" placeholder="تفاصيل وبيانات المعاملة والقرار الإداري..." class="w-full p-2 border rounded-lg h-20 bg-white text-xs"></textarea>
+                        
+                        <div class="bg-white p-2 rounded-lg border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">📷 إرفاق وثيقة / مستند المعاملة (اختياري):</label>
+                            <input type="file" id="txFile" class="text-xs" accept="image/*">
+                        </div>
+
+                        <button onclick="saveTransactionRecord()" class="w-full bg-slate-800 text-white p-2.5 rounded-lg font-bold text-xs hover:bg-slate-900">توثيق وحفظ المعاملة 💾</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="font-bold text-md text-gray-800">سجل المعاملات والوثائق الإدارية المحفوظة:</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse border border-gray-300 text-right text-xs bg-white rounded-lg shadow-sm">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-800">
+                                        <th class="border p-2">رقم المعاملة</th>
+                                        <th class="border p-2">عنوان المعاملة</th>
+                                        <th class="border p-2">النوع</th>
+                                        <th class="border p-2">كود الطالب</th>
+                                        <th class="border p-2">التاريخ</th>
+                                        <th class="border p-2">المستند</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- لوحة المعلم -->
@@ -438,6 +530,16 @@
                 <div id="studentReportArea" class="space-y-6">
                     
                     <div id="studentBasicInfo" class="p-4 bg-blue-50 border border-blue-200 rounded-xl"></div>
+
+                    <!-- إعلانات المدرسة العامة للطالب -->
+                    <div class="p-4 bg-indigo-50/90 border border-indigo-200 rounded-xl space-y-3">
+                        <h3 class="font-bold text-md text-indigo-900 flex items-center gap-2">
+                            <span>إعلانات وأخبار الأكاديمية الرسمية 📢</span>
+                        </h3>
+                        <div id="studentPublicPostsContainer" class="space-y-3 text-xs">
+                            <p class="text-gray-500">جاري تحميل إعلانات الأكاديمية...</p>
+                        </div>
+                    </div>
 
                     <!-- إرسال ملاحظة/استفسار من ولي الأمر إلى الإدارة -->
                     <div class="p-4 bg-indigo-50/80 border border-indigo-200 rounded-xl space-y-2">
@@ -659,6 +761,179 @@
             document.getElementById('admin-tab-' + tab).classList.add('bg-blue-800', 'text-white');
         }
 
+        /* ------------------ نظام استعادة كلمة المرور ------------------ */
+        function toggleResetPasswordModal(show) {
+            const modal = document.getElementById('resetPasswordModal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        async function submitPasswordResetRequest() {
+            const code = document.getElementById('resetCode').value.trim();
+            const phone = document.getElementById('resetPhone').value.trim();
+
+            if (!code || !phone) { alert('أدخل الكود ورقم الهاتف'); return; }
+
+            const { error } = await supabaseClient.from('messages').insert([{
+                target_type: 'admin',
+                target_code: 'admin',
+                sender_role: 'system_reset',
+                sender_code: code,
+                message_text: `طلب استعادة كلمة المرور / الحساب للكود (${code}) - رقم الهاتف: (${phone})`
+            }]);
+
+            if (error) {
+                alert('خطأ أثناء إرسال الطلب: ' + error.message);
+            } else {
+                alert('تم إرسال طلبك إلى إدارة الأكاديمية بنجاح! سيتم التواصل معك لمراجعة وتأكيد استعادة الحساب.');
+                toggleResetPasswordModal(false);
+                document.getElementById('resetCode').value = '';
+                document.getElementById('resetPhone').value = '';
+            }
+        }
+
+        /* ------------------ نظام المنشورات والإعلانات العامة ------------------ */
+        async function createNewPost() {
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const fileInput = document.getElementById('postFile');
+
+            if (!title || !content) { alert('يرجى كتابة عنوان ونص الإعلان'); return; }
+
+            try {
+                let imageUrl = await uploadFileToSupabase(fileInput);
+
+                const postPayload = { title: title, content: content };
+                if (imageUrl) postPayload.image_url = imageUrl;
+
+                const { error } = await supabaseClient.from('posts').insert([postPayload]);
+
+                if (error) alert('خطأ أثناء نشر الإعلان: ' + error.message);
+                else {
+                    alert('تم نشر الإعلان بنجاح للجميع! 📢');
+                    document.getElementById('postTitle').value = '';
+                    document.getElementById('postContent').value = '';
+                    fileInput.value = '';
+                    loadPosts();
+                }
+            } catch(e) { alert('فشل رفع الصورة: ' + e.message); }
+        }
+
+        async function loadPosts() {
+            const container = document.getElementById('adminPostsContainer');
+            const { data } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+
+            container.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(p => {
+                    let imgHtml = p.image_url ? `<img src="${p.image_url}" class="max-h-48 rounded border mt-2">` : '';
+                    let dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('ar-YE') : '';
+
+                    container.innerHTML += `
+                        <div class="p-3 border rounded-xl bg-white text-xs space-y-2 shadow-sm">
+                            <div class="flex justify-between items-center border-b pb-1">
+                                <h4 class="font-bold text-indigo-900 text-sm">${p.title}</h4>
+                                <span class="text-[10px] text-gray-500">${dateStr}</span>
+                            </div>
+                            <p class="text-gray-800 leading-relaxed">${p.content}</p>
+                            ${imgHtml}
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<p class="text-xs text-gray-500">لا توجد إعلانات منشورة حالياً</p>';
+            }
+        }
+
+        async function loadStudentPublicPosts() {
+            const container = document.getElementById('studentPublicPostsContainer');
+            if (!container) return;
+
+            const { data } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+
+            container.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(p => {
+                    let imgHtml = p.image_url ? `<div class="mt-2"><img src="${p.image_url}" class="max-h-48 rounded-lg border shadow-sm"></div>` : '';
+                    let dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString('ar-YE') : '';
+
+                    container.innerHTML += `
+                        <div class="p-3 border rounded-lg bg-white text-xs space-y-1 shadow-sm">
+                            <div class="flex justify-between items-center text-indigo-900 font-bold">
+                                <span>📌 ${p.title}</span>
+                                <span class="text-[10px] text-gray-400">${dateStr}</span>
+                            </div>
+                            <p class="text-gray-700 leading-relaxed">${p.content}</p>
+                            ${imgHtml}
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<p class="text-xs text-gray-500">لا توجد إعلانات عامة جديدة</p>';
+            }
+        }
+
+        /* ------------------ نظام المعاملات والتوثيق الإداري ------------------ */
+        async function saveTransactionRecord() {
+            const title = document.getElementById('txTitle').value.trim();
+            const type = document.getElementById('txType').value;
+            const code = document.getElementById('txStudentCode').value.trim();
+            const details = document.getElementById('txDetails').value.trim();
+            const fileInput = document.getElementById('txFile');
+
+            if (!title || !details) { alert('يرجى كتابة عنوان وتفاصيل المعاملة'); return; }
+
+            try {
+                let docUrl = await uploadFileToSupabase(fileInput);
+
+                const txPayload = {
+                    title: title,
+                    type: type,
+                    student_code: code || null,
+                    details: details
+                };
+                if (docUrl) txPayload.document_url = docUrl;
+
+                const { error } = await supabaseClient.from('transactions').insert([txPayload]);
+
+                if (error) alert('خطأ أثناء حفظ المعاملة: ' + error.message);
+                else {
+                    alert('تم توثيق وحفظ المعاملة بنجاح! 📜');
+                    document.getElementById('txTitle').value = '';
+                    document.getElementById('txStudentCode').value = '';
+                    document.getElementById('txDetails').value = '';
+                    fileInput.value = '';
+                    loadTransactions();
+                }
+            } catch(e) { alert('فشل رفع مستند المعاملة: ' + e.message); }
+        }
+
+        async function loadTransactions() {
+            const tbody = document.getElementById('transactionsTableBody');
+            const { data } = await supabaseClient.from('transactions').select('*').order('created_at', { ascending: false });
+
+            tbody.innerHTML = '';
+            if (data && data.length > 0) {
+                data.forEach(t => {
+                    let docLink = t.document_url ? `<a href="${t.document_url}" target="_blank" class="text-blue-700 font-bold hover:underline">عرض المستند 📄</a>` : '-';
+                    let dateStr = t.created_at ? new Date(t.created_at).toLocaleDateString('ar-YE') : '-';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="border p-2 font-mono font-bold text-slate-700">#${t.id}</td>
+                            <td class="border p-2 font-semibold">${t.title}</td>
+                            <td class="border p-2">${t.type}</td>
+                            <td class="border p-2 font-mono">${t.student_code || '-'}</td>
+                            <td class="border p-2">${dateStr}</td>
+                            <td class="border p-2 text-center">${docLink}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-gray-500">لا توجد معاملات موثقة حالياً</td></tr>`;
+            }
+        }
+
         /* ------------------ نظام الرسائل المطور والردود ------------------ */
 
         // إرسال توجيه/رسالة من الإدارة
@@ -799,7 +1074,7 @@
                     let imgHtml = m.image_url ? `<img src="${m.image_url}" class="max-h-36 rounded border mt-1">` : '';
                     let repliesHtml = await renderRepliesHtml(m.id);
 
-                    let senderInfo = m.sender_role === 'teacher' ? `من المعلم: ${m.sender_code}` : (m.sender_role === 'parent' ? `من ولي الأمر: ${m.sender_code}` : 'من الإدارة');
+                    let senderInfo = m.sender_role === 'teacher' ? `من المعلم: ${m.sender_code}` : (m.sender_role === 'parent' ? `من ولي الأمر: ${m.sender_code}` : (m.sender_role === 'system_reset' ? ` طلب استعادة حساب` : 'من الإدارة'));
 
                     container.innerHTML += `
                         <div class="p-3 border rounded-lg bg-white text-xs space-y-2 shadow-sm">
@@ -1355,6 +1630,7 @@
             loadStudentExams(student.grade);
             loadStudentHomeworks(student.grade);
             loadStudentFeeInfo(code);
+            loadStudentPublicPosts();
 
             const { data: grades } = await supabaseClient.from('grades').select('*').eq('student_id', code);
             const tbody = document.getElementById('studentGradesBody');
