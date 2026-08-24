@@ -14,7 +14,6 @@
             .printable-area { border: none !important; padding: 0 !important; }
         }
 
-        /* تنسيقات كود الفقرات والصور المدمج */
         .paragraph-card {
             background: #fafafa;
             border: 1px solid #e1e4e8;
@@ -78,14 +77,14 @@
     
     <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full border border-gray-100 printable-area">
         
-        <!-- الترويسة الرسمية للطباعة والتقارير -->
+        <!-- الترويسة الرسمية -->
         <div class="flex flex-col items-center border-b pb-4 mb-6 text-center">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-900">أكاديمية نبلاء اليمن الأهلية</h1>
             <p class="text-sm font-semibold text-amber-600 mt-1">نبني أساساً... نصنع مستقبلاً</p>
             <p class="text-xs text-gray-500 mt-0.5">إشراف وإعداد: الأستاذ هيثم علي صالح القصلي</p>
         </div>
 
-        <!-- ==================== 1. شاشة تسجيل الدخول ==================== -->
+        <!-- 1. شاشة تسجيل الدخول -->
         <div id="loginSection" class="space-y-4 max-w-md mx-auto my-6 p-6 border rounded-xl bg-gradient-to-b from-blue-50 to-indigo-50/30 shadow-sm no-print">
             <h2 class="text-xl font-bold text-center text-blue-900 mb-4">تسجيل الدخول للنظام</h2>
             
@@ -116,7 +115,7 @@
             <button onclick="handleLogin()" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition shadow">دخول النظام</button>
         </div>
 
-        <!-- ==================== 2. الواجهة الرئيسية ==================== -->
+        <!-- 2. الواجهة الرئيسية -->
         <div id="appMain" class="hidden space-y-6">
             
             <div class="flex justify-between items-center bg-blue-900 text-white p-3 rounded-xl no-print shadow-md">
@@ -124,7 +123,7 @@
                 <button onclick="logout()" class="bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-red-600 transition shadow">تسجيل الخروج 🚪</button>
             </div>
 
-            <!-- ==================== لوحة الإدارة ==================== -->
+            <!-- لوحة الإدارة -->
             <div id="view-admin" class="role-view hidden space-y-6">
                 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print">
@@ -155,7 +154,7 @@
                     <button onclick="showAdminTab('messages'); loadAdminMessages();" id="admin-tab-messages" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">الملاحظات والرسائل 📩</button>
                 </div>
 
-                <!-- تبويب 1: إعداد الطلاب والبحث والتصفية المتقدمة -->
+                <!-- تبويب 1: الطلاب -->
                 <div id="admin-sub-students" class="admin-sub-content space-y-6">
                     <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200 no-print space-y-3">
                         <h2 class="font-bold text-lg text-blue-900">إضافة طالب جديد</h2>
@@ -168,7 +167,6 @@
                         <button onclick="addStudent()" class="w-full bg-blue-700 text-white p-2.5 rounded-lg font-bold hover:bg-blue-800 transition">حفظ بيانات الطالب</button>
                     </div>
 
-                    <!-- التصفية والتفتيش المتقدم -->
                     <div class="bg-slate-50 p-4 rounded-xl border space-y-3 no-print">
                         <h3 class="font-bold text-md text-slate-800">التفتيش والتصفية المتقدمة للطلاب 🔍</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -211,23 +209,21 @@
                     </div>
                 </div>
 
-                <!-- ==================== تبويب مدمج: إدارة الفقرات والصور المباشرة ==================== -->
+                <!-- تبويب الفقرات والصور المباشرة -->
                 <div id="admin-sub-paragraphs" class="admin-sub-content hidden space-y-6">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
                         <h2 class="font-bold text-lg text-slate-800 border-b pb-2">إضافة وإنشاء الفقرات والصور (Supabase Storage) 🖼️</h2>
                         
                         <form id="paragraphsForm" onsubmit="saveAllParagraphs(event)">
-                            <div id="paragraphsList">
-                                <!-- يتم إضافة حقول الفقرات هنا ديناميكيًا -->
-                            </div>
+                            <div id="paragraphsList"></div>
 
                             <div class="flex gap-2 mt-3">
-                                <button type="button" class="flex-1 bg-gray-600 text-white p-2 rounded-lg font-bold text-sm hover:bg-gray-700 transition" onclick="addParagraph()">+ إضافة فقرة جديد</button>
+                                <button type="button" class="flex-1 bg-gray-600 text-white p-2 rounded-lg font-bold text-sm hover:bg-gray-700 transition" onclick="addParagraph()">+ إضافة فقرة جديدة</button>
                                 <button type="submit" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold text-sm hover:bg-blue-800 transition">💾 رفع وحفظ الكل</button>
                             </div>
                         </form>
 
-                        <div id="loadingOverlay" class="hidden text-center text-blue-700 font-bold py-2">جاري رفع الصور وحفظ البيانات إلى Supabase... ⏳</div>
+                        <div id="loadingOverlay" class="hidden text-center text-blue-700 font-bold py-2">جاري رفع الصور وحفظ البيانات... ⏳</div>
 
                         <button type="button" class="w-full bg-teal-700 text-white p-2.5 rounded-lg font-bold text-sm hover:bg-teal-800 transition mt-4" onclick="fetchSavedParagraphs()">📥 تحميل واستعراض الفقرات المحفوظة</button>
 
@@ -238,7 +234,7 @@
                     </div>
                 </div>
 
-                <!-- تبويب 2: بند إدارة الأوسمة -->
+                <!-- تبويب الأوسمة -->
                 <div id="admin-sub-badges" class="admin-sub-content hidden space-y-4">
                     <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3">
                         <h2 class="font-bold text-lg text-amber-900 border-b pb-2">منح الأوسمة والتكريمات الأكاديمية 🏆</h2>
@@ -256,7 +252,7 @@
                     </div>
                 </div>
 
-                <!-- تبويب 3: جدول الاختبارات والحفظ المطلوب -->
+                <!-- تبويب الاختبارات والحفظ -->
                 <div id="admin-sub-exams" class="admin-sub-content hidden space-y-4">
                     <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 space-y-3">
                         <h3 class="font-bold text-lg text-indigo-900">جدولة اختبار أو تحديد مقرر الحفظ المطلوب 📅</h3>
@@ -267,14 +263,21 @@
                         </div>
                         <input type="text" id="exMemo" placeholder="كشف الحفظ المطلوب (مثال: سورة الملك من 1-15)" class="w-full p-2 border rounded-lg bg-white">
                         <textarea id="exInstructions" placeholder="تنبيهات ومتطلبات الاختبار..." class="w-full p-2 border rounded-lg h-16 bg-white"></textarea>
+                        
+                        <!-- إضافة رفع صورة للاختبار/المقرر -->
+                        <div class="bg-white p-2 rounded-lg border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">📷 إرفاق صورة جدول الاختبار أو مقرر الحفظ:</label>
+                            <input type="file" id="exFile" class="text-xs" accept="image/*">
+                        </div>
+
                         <button onclick="saveExamSchedule()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">نشر جدول الاختبار / الحفظ 📤</button>
                     </div>
                 </div>
 
-                <!-- تبويب 4: صندوق الملاحظات -->
+                <!-- تبويب الملاحظات والرسائل المحدث مع رفع صور -->
                 <div id="admin-sub-messages" class="admin-sub-content hidden space-y-6">
                     <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3">
-                        <h3 class="font-bold text-lg text-amber-900">إرسال توجيه / ملاحظة (من الإدارة)</h3>
+                        <h3 class="font-bold text-lg text-amber-900">إرسال توجيه / ملاحظة (من الإدارة) 📩</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <select id="adminMsgTarget" class="p-2 border rounded-lg bg-white">
                                 <option value="teacher">إلى المعلمين</option>
@@ -283,7 +286,14 @@
                             <input type="text" id="adminMsgCode" placeholder="كود المعلم أو الطالب المستهدف" class="p-2 border rounded-lg bg-white">
                         </div>
                         <textarea id="adminMsgText" placeholder="اكتب الملاحظة هنا..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
-                        <button onclick="sendAdminMessage()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">إرسال التوجيه</button>
+                        
+                        <!-- رفع صورة مع توجيه الإدارة -->
+                        <div class="bg-white p-2 rounded-lg border">
+                            <label class="block text-xs font-bold text-gray-700 mb-1">📷 إرفاق صورة مع التوجيه (اختياري):</label>
+                            <input type="file" id="adminMsgFile" class="text-xs" accept="image/*">
+                        </div>
+
+                        <button onclick="sendAdminMessage()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">إرسال التوجيه والرسالة 📤</button>
                     </div>
 
                     <div class="space-y-3">
@@ -296,10 +306,10 @@
 
             </div>
 
-            <!-- ==================== لوحة المعلم ==================== -->
+            <!-- لوحة المعلم -->
             <div id="view-teacher" class="role-view hidden space-y-6 no-print">
                 
-                <!-- أداة تسجيل الحضور والغياب اليومي للطلاب -->
+                <!-- تسجيل الحضور والغياب -->
                 <div class="bg-teal-50/80 p-4 rounded-xl border border-teal-200 space-y-4 shadow-sm">
                     <h2 class="font-bold text-lg text-teal-900 border-b pb-2 flex items-center gap-2">
                         تسجيل الحضور والغياب اليومي للطلاب 📅
@@ -360,7 +370,7 @@
                     </div>
                 </div>
 
-                <!-- أداة بنك الأسئلة والتدريبات للواجب السريع -->
+                <!-- بنك الأسئلة -->
                 <div class="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-3 shadow-sm">
                     <h2 class="font-bold text-lg text-purple-900 border-b pb-2">بنك الأسئلة وتدريبات الواجب السريع 📝</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -381,7 +391,7 @@
                     <div id="qBankContainer" class="hidden space-y-2 pt-2"></div>
                 </div>
 
-                <!-- أداة منح التكريمات والأوسمة للطالب -->
+                <!-- منح الأوسمة -->
                 <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3 shadow-sm">
                     <h2 class="font-bold text-lg text-amber-900 border-b pb-2">منح الأوسمة والشهادات الرقمية للطلاب 🏆</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -396,33 +406,41 @@
                     <button onclick="grantBadgeToStudent()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">منح الوسام للطالب 🎖️</button>
                 </div>
 
-                <!-- قسم إرسال واجب مدرسي مخصص -->
+                <!-- إضافة واجب مدرسي محدّث مع رفع صورة من الجهاز مباشرة -->
                 <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3 shadow-sm">
-                    <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص 🖼️</h2>
+                    <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص مع صورة 🖼️</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <input type="text" id="hwGrade" placeholder="الصف الدراسي" class="p-2 border rounded-lg bg-white">
                         <input type="text" id="hwSubject" placeholder="المادة" class="p-2 border rounded-lg bg-white">
                     </div>
                     <textarea id="hwText" placeholder="تفاصيل الواجب الدراسي والشروط المطلوبة..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
                     
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">رابط صورة الواجب / التوضيح (اختياري):</label>
-                        <input type="url" id="hwImage" placeholder="https://example.com/image.jpg" class="w-full p-2 border rounded-lg bg-white text-xs dir-ltr">
+                    <div class="bg-white p-2 rounded-lg border">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">📷 رفع صورة الواجب / التوضيح من جهازك مباشرة:</label>
+                        <input type="file" id="hwFile" class="text-xs" accept="image/*">
                     </div>
 
-                    <button onclick="sendHomework()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">إرسال الواجب المدرسـي 📤</button>
+                    <button onclick="sendHomework()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">إرسال ونشر الواجب المدرسـي 📤</button>
+                </div>
+
+                <!-- صندوق استقبال توجيهات الإدارة للمعلم -->
+                <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-200 space-y-3 shadow-sm">
+                    <h2 class="font-bold text-lg text-amber-900 border-b pb-2">توجيهات ورسائل الإدارة الواردة 📬</h2>
+                    <button onclick="loadTeacherMessages()" class="bg-amber-800 text-white text-xs px-3 py-1.5 rounded font-bold">تحديث الرسائل</button>
+                    <div id="teacherMessagesContainer" class="space-y-2 text-xs">
+                        <p class="text-gray-500">اضغط تحديث لعرض توجيهات الإدارة...</p>
+                    </div>
                 </div>
 
             </div>
 
-            <!-- ==================== لوحة الطالب وولي الأمر ==================== -->
+            <!-- لوحة الطالب وولي الأمر -->
             <div id="view-student" class="role-view hidden space-y-6">
                 
                 <div id="studentReportArea" class="space-y-6">
                     
                     <div id="studentBasicInfo" class="p-4 bg-blue-50 border border-blue-200 rounded-xl"></div>
 
-                    <!-- سجل الحضور والغياب المباشر للطالب -->
                     <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-xl space-y-2">
                         <h3 class="font-bold text-md text-teal-900 flex items-center gap-1">سجل الحضور والغياب اليومي 📌</h3>
                         <div class="overflow-x-auto">
@@ -440,7 +458,6 @@
                         </div>
                     </div>
 
-                    <!-- لوحة الأوسمة والتكريمات الأكاديمية للطالب -->
                     <div class="p-4 bg-amber-50/60 border border-amber-200 rounded-xl space-y-2">
                         <h3 class="font-bold text-md text-amber-900 flex items-center gap-1">لوحة الأوسمة والتكريمات الأكاديمية 🏆</h3>
                         <div id="badgesContainer" class="flex flex-wrap gap-2 pt-1">
@@ -448,7 +465,6 @@
                         </div>
                     </div>
 
-                    <!-- جدول الاختبارات والحفظ المطلوب للطالب -->
                     <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 space-y-2">
                         <h3 class="font-bold text-md text-indigo-900">جدول الاختبارات ومتطلبات الحفظ 📅</h3>
                         <div id="studentExamList" class="space-y-2 text-xs">
@@ -479,7 +495,6 @@
 
                     <div id="studentFeeInfo" class="p-4 bg-green-50 border border-green-200 rounded-xl"></div>
 
-                    <!-- أزرار تصدير التقارير الرسمية جاهزة للطباعة -->
                     <div class="flex flex-wrap gap-2 no-print">
                         <button onclick="printStudentFullGradeCard()" class="flex-1 bg-blue-900 text-white p-2.5 rounded-lg font-bold hover:bg-blue-800 transition text-sm">طباعة كشف درجات رسمي 📄</button>
                         <button onclick="printStudentFeeReceipt()" class="flex-1 bg-green-800 text-white p-2.5 rounded-lg font-bold hover:bg-green-900 transition text-sm">طباعة سند سداد رسوم 🧾</button>
@@ -491,7 +506,7 @@
         </div>
     </div>
 
-    <!-- نافذة الطباعة المخصصة للتقارير الرسمية -->
+    <!-- نافذة الطباعة -->
     <div id="printTemplate" class="hidden p-8 max-w-2xl mx-auto bg-white border-2 border-gray-800 rounded-xl space-y-6">
         <div class="text-center border-b-2 border-gray-800 pb-4">
             <h1 class="text-2xl font-bold">أكاديمية نبلاء اليمن الأهلية</h1>
@@ -515,14 +530,13 @@
         const supabaseKey = 'sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const BUCKET_NAME = "paragraph-images"; // اسم Storage Bucket للصور
-        const TABLE_NAME = "paragraphs";         // اسم جدول الفقرات
+        const BUCKET_NAME = "paragraph-images";
+        const TABLE_NAME = "paragraphs";
 
         let currentStudentCode = '';
         let currentTeacherCode = '';
         let paragraphCount = 0;
 
-        // تحديد تاريخ اليوم تلقائياً وإضافة أول فقرة
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date().toISOString().split('T')[0];
             const attDateInput = document.getElementById('attDate');
@@ -536,6 +550,28 @@
             { grade: 'السادس', subject: 'رياضيات', question: 'حل المعادلة التالية: 2س + 5 = 15؟' },
             { grade: 'السادس', subject: 'إنجليزي', question: 'Translate to English: "أنا أدرس الرياضيات كل يوم"' }
         ];
+
+        /* دالة مساعدة عامة لرفع صورة من أي نموذج إلى Supabase Storage */
+        async function uploadFileToSupabase(fileInput) {
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) return null;
+            
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `uploads/${fileName}`;
+
+            const { error: uploadError } = await supabaseClient.storage
+                .from(BUCKET_NAME)
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicUrlData } = supabaseClient.storage
+                .from(BUCKET_NAME)
+                .getPublicUrl(filePath);
+
+            return publicUrlData.publicUrl;
+        }
 
         function toggleLoginFields() {
             const role = document.getElementById('userRole').value;
@@ -569,6 +605,7 @@
                 if (document.getElementById('loginPass').value === 'teacher123') {
                     currentTeacherCode = code;
                     openDashboard('teacher', 'حساب الكادر التعليمي - كود: ' + code);
+                    loadTeacherMessages();
                 } else { alert('كلمة المرور غير صحيحة!'); }
             } 
             else if (role === 'student') {
@@ -608,7 +645,7 @@
             document.getElementById('admin-tab-' + tab).classList.add('bg-blue-800', 'text-white');
         }
 
-        /* ------------------ إدارة الفقرات والصور الديناميكية ------------------ */
+        /* ------------------ الفقرات والصور ------------------ */
         function addParagraph() {
             paragraphCount++;
             const list = document.getElementById('paragraphsList');
@@ -671,26 +708,7 @@
                 for (let card of cards) {
                     const textContent = card.querySelector('textarea').value;
                     const fileInput = card.querySelector('input[type="file"]');
-                    const file = fileInput.files[0];
-                    let imageUrl = null;
-
-                    if (file) {
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
-                        const filePath = `uploads/${fileName}`;
-
-                        const { error: uploadError } = await supabaseClient.storage
-                            .from(BUCKET_NAME)
-                            .upload(filePath, file);
-
-                        if (uploadError) throw uploadError;
-
-                        const { data: publicUrlData } = supabaseClient.storage
-                            .from(BUCKET_NAME)
-                            .getPublicUrl(filePath);
-
-                        imageUrl = publicUrlData.publicUrl;
-                    }
+                    const imageUrl = await uploadFileToSupabase(fileInput);
 
                     const { error: insertError } = await supabaseClient
                         .from(TABLE_NAME)
@@ -844,7 +862,7 @@
             }
         }
 
-        /* الإحصائيات والتصفيات المتقدمة */
+        /* الإحصائيات والتصفيات */
         async function loadAdminDashboardStats() {
             const { data: stData } = await supabaseClient.from('student').select('id');
             const { data: feesData } = await supabaseClient.from('fees').select('total_fee, paid_fee');
@@ -968,7 +986,7 @@
             }
         }
 
-        /* بنك الأسئلة والمساعد السريع للمعلم */
+        /* بنك الأسئلة */
         function loadQuestionBank() {
             const grade = document.getElementById('qBankGrade').value;
             const subject = document.getElementById('qBankSubject').value;
@@ -998,38 +1016,59 @@
             else alert('تم إرسال السؤال كواجب للمرحلة بنجاح!');
         }
 
-        /* إرسال الواجب المدرسي */
+        /* إرسال الواجب المدرسـي مع صورة من جهاز المدرس مباشرة */
         async function sendHomework() {
             const grade = document.getElementById('hwGrade').value.trim();
             const subject = document.getElementById('hwSubject').value.trim();
             const text = document.getElementById('hwText').value.trim();
-            const imageUrl = document.getElementById('hwImage').value.trim();
+            const fileInput = document.getElementById('hwFile');
 
             if (!grade || !subject || !text) { alert('يرجى ملء كافة حقول الواجب الأساسية'); return; }
 
-            const homeworkPayload = { grade: grade, subject: subject, homework_text: text };
-            if (imageUrl) { homeworkPayload.image_url = imageUrl; }
+            try {
+                let imageUrl = await uploadFileToSupabase(fileInput);
 
-            const { error } = await supabaseClient.from('homeworks').insert([homeworkPayload]);
-            if (error) alert('خطأ: ' + error.message);
-            else { 
-                alert('تم إرسال الواجب بنجاح!'); 
-                document.getElementById('hwText').value = ''; 
-                document.getElementById('hwImage').value = ''; 
+                const homeworkPayload = { grade: grade, subject: subject, homework_text: text };
+                if (imageUrl) { homeworkPayload.image_url = imageUrl; }
+
+                const { error } = await supabaseClient.from('homeworks').insert([homeworkPayload]);
+                if (error) alert('خطأ: ' + error.message);
+                else { 
+                    alert('تم رفع الصورة ونشر الواجب بنجاح! 🖼️'); 
+                    document.getElementById('hwText').value = ''; 
+                    fileInput.value = ''; 
+                }
+            } catch(e) {
+                alert('فشل رفع صورة الواجب: ' + e.message);
             }
         }
 
-        /* إدارة الملاحظات والتوجيهات الإدارية */
+        /* إرسال رسائل وتوجيهات الإدارة مع إرفاق صورة */
         async function sendAdminMessage() {
             const target = document.getElementById('adminMsgTarget').value;
             const code = document.getElementById('adminMsgCode').value.trim();
             const text = document.getElementById('adminMsgText').value.trim();
+            const fileInput = document.getElementById('adminMsgFile');
 
             if (!text) { alert('اكتب نص الملاحظة'); return; }
 
-            const { error } = await supabaseClient.from('messages').insert([{ target_type: target, target_code: code, message_text: text }]);
-            if (error) alert('خطأ: ' + error.message);
-            else { alert('تم إرسال التوجيه بنجاح!'); document.getElementById('adminMsgText').value = ''; loadAdminMessages(); }
+            try {
+                let imageUrl = await uploadFileToSupabase(fileInput);
+
+                const msgPayload = { target_type: target, target_code: code, message_text: text };
+                if (imageUrl) { msgPayload.image_url = imageUrl; }
+
+                const { error } = await supabaseClient.from('messages').insert([msgPayload]);
+                if (error) alert('خطأ: ' + error.message);
+                else { 
+                    alert('تم إرسال التوجيه والإرفاق بنجاح!'); 
+                    document.getElementById('adminMsgText').value = ''; 
+                    fileInput.value = '';
+                    loadAdminMessages(); 
+                }
+            } catch(e) {
+                alert('فشل رفع الصورة: ' + e.message);
+            }
         }
 
         async function loadAdminMessages() {
@@ -1039,10 +1078,12 @@
             container.innerHTML = '';
             if (data && data.length > 0) {
                 data.forEach(m => {
+                    let imgHtml = m.image_url ? `<img src="${m.image_url}" class="max-h-36 rounded border mt-1">` : '';
                     container.innerHTML += `
                         <div class="p-3 border rounded-lg bg-white text-xs space-y-1 shadow-sm">
                             <div class="font-bold text-blue-900">إلى: ${m.target_type === 'teacher' ? 'معلم' : 'ولي أمر'} (كود: ${m.target_code || 'الجميع'})</div>
                             <p class="text-gray-700">${m.message_text}</p>
+                            ${imgHtml}
                         </div>
                     `;
                 });
@@ -1051,7 +1092,33 @@
             }
         }
 
-        /* منح الأوسمة */
+        /* جلب الرسائل والتوجيهات الخاصة بالمعلم */
+        async function loadTeacherMessages() {
+            const container = document.getElementById('teacherMessagesContainer');
+            const { data } = await supabaseClient.from('messages').select('*').eq('target_type', 'teacher');
+
+            container.innerHTML = '';
+            if (data && data.length > 0) {
+                const myMsgs = data.filter(m => !m.target_code || m.target_code === currentTeacherCode);
+                if (myMsgs.length > 0) {
+                    myMsgs.forEach(m => {
+                        let imgHtml = m.image_url ? `<img src="${m.image_url}" class="max-h-40 rounded border mt-2">` : '';
+                        container.innerHTML += `
+                            <div class="p-3 border rounded-lg bg-white text-xs space-y-1 shadow-sm">
+                                <p class="text-gray-800 font-semibold">${m.message_text}</p>
+                                ${imgHtml}
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500">لا توجد توجيهات جديدة موجهة لك</p>';
+                }
+            } else {
+                container.innerHTML = '<p class="text-gray-500">لا توجد توجيهات من الإدارة</p>';
+            }
+        }
+
+        /* الأوسمة */
         async function grantAdminBadge() {
             const code = document.getElementById('adminBadgeStudentCode').value.trim();
             const badge = document.getElementById('adminBadgeName').value;
@@ -1072,22 +1139,32 @@
             else { alert('تم منح الوسام للطالب بنجاح! 🎖️'); document.getElementById('grantBadgeStudentCode').value = ''; }
         }
 
-        /* جدولة الاختبارات والحفظ */
+        /* الاختبارات والحفظ مع رفع صورة من الإدارة */
         async function saveExamSchedule() {
             const grade = document.getElementById('exGrade').value.trim();
             const subject = document.getElementById('exSubject').value.trim();
             const exDate = document.getElementById('exDate').value;
             const memo = document.getElementById('exMemo').value.trim();
             const inst = document.getElementById('exInstructions').value.trim();
+            const fileInput = document.getElementById('exFile');
 
             if (!grade || !subject) { alert('يرجى ملء الصف والمادة'); return; }
 
-            const { error } = await supabaseClient.from('exams').insert([{
-                grade: grade, subject: subject, exam_date: exDate, memorization_req: memo, instructions: inst
-            }]);
+            try {
+                let imageUrl = await uploadFileToSupabase(fileInput);
 
-            if (error) alert('خطأ: ' + error.message);
-            else alert('تم حفظ ونشر جدول الاختبار والحفظ بنجاح!');
+                const { error } = await supabaseClient.from('exams').insert([{
+                    grade: grade, subject: subject, exam_date: exDate, memorization_req: memo, instructions: inst, image_url: imageUrl
+                }]);
+
+                if (error) alert('خطأ: ' + error.message);
+                else {
+                    alert('تم حفظ ونشر جدول الاختبار والحفظ مع الصورة بنجاح!');
+                    fileInput.value = '';
+                }
+            } catch(e) {
+                alert('فشل رفع الصورة: ' + e.message);
+            }
         }
 
         /* جلب تقارير الطالب */
@@ -1154,11 +1231,13 @@
             container.innerHTML = '';
             if (data && data.length > 0) {
                 data.forEach(e => {
+                    let imgHtml = e.image_url ? `<div class="mt-2"><img src="${e.image_url}" class="max-h-48 rounded border"></div>` : '';
                     container.innerHTML += `
                         <div class="p-2 border rounded bg-white space-y-1">
                             <div class="font-bold text-indigo-900">المادة: ${e.subject} (تاريخ الاختبار: ${e.exam_date || 'غير محدد'})</div>
                             <div><b>المقرر والحفظ:</b> ${e.memorization_req || '-'}</div>
                             <div class="text-amber-800"><b>تعليمات:</b> ${e.instructions || '-'}</div>
+                            ${imgHtml}
                         </div>
                     `;
                 });
@@ -1185,14 +1264,9 @@
             } else { container.innerHTML = '<p class="text-xs text-gray-500">لا توجد واجبات مرصودة</p>'; }
         }
 
-        /* تصدير التقارير الرسمية الجاهزة للطباعة */
-        async function printStudentFullGradeCard() {
-            generateAdminGradeCard(currentStudentCode);
-        }
-
-        async function printStudentFeeReceipt() {
-            generateAdminReceipt(currentStudentCode);
-        }
+        /* الطباعة */
+        async function printStudentFullGradeCard() { generateAdminGradeCard(currentStudentCode); }
+        async function printStudentFeeReceipt() { generateAdminReceipt(currentStudentCode); }
 
         async function generateAdminGradeCard(studentCode) {
             const { data: student } = await supabaseClient.from('student').select('*').eq('id', studentCode).single();
