@@ -212,7 +212,7 @@
             <!-- ==================== لوحة المعلم ==================== -->
             <div id="view-teacher" class="role-view hidden space-y-6 no-print">
                 
-                <!-- أداة تسجيل الحضور والغياب اليومي للطلاب (جديد) -->
+                <!-- أداة تسجيل الحضور والغياب اليومي للطلاب -->
                 <div class="bg-teal-50/80 p-4 rounded-xl border border-teal-200 space-y-4 shadow-sm">
                     <h2 class="font-bold text-lg text-teal-900 border-b pb-2 flex items-center gap-2">
                         تسجيل الحضور والغياب اليومي للطلاب 📅
@@ -309,13 +309,21 @@
                     <button onclick="grantBadgeToStudent()" class="w-full bg-amber-700 text-white p-2.5 rounded-lg font-bold hover:bg-amber-800 transition">منح الوسام للطالب 🎖️</button>
                 </div>
 
+                <!-- قسم إرسال واجب مدرسي مخصص (محدث مع ميزة إرفاق الصورة) -->
                 <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3 shadow-sm">
-                    <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص</h2>
+                    <h2 class="font-bold text-lg text-indigo-900 border-b pb-2">إضافة واجب مدرسي مخصص 🖼️</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <input type="text" id="hwGrade" placeholder="الصف الدراسي" class="p-2 border rounded-lg bg-white">
                         <input type="text" id="hwSubject" placeholder="المادة" class="p-2 border rounded-lg bg-white">
                     </div>
                     <textarea id="hwText" placeholder="تفاصيل الواجب الدراسي والشروط المطلوبة..." class="w-full p-2 border rounded-lg h-20 bg-white"></textarea>
+                    
+                    <!-- حقل إضافة رابط صورة للواجب (تحديث جديد) -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">رابط صورة الواجب / التوضيح (اختياري):</label>
+                        <input type="url" id="hwImage" placeholder="https://example.com/image.jpg" class="w-full p-2 border rounded-lg bg-white text-xs dir-ltr">
+                    </div>
+
                     <button onclick="sendHomework()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">إرسال الواجب المدرسـي 📤</button>
                 </div>
 
@@ -328,7 +336,7 @@
                     
                     <div id="studentBasicInfo" class="p-4 bg-blue-50 border border-blue-200 rounded-xl"></div>
 
-                    <!-- سجل الحضور والغياب المباشر للطالب (جديد) -->
+                    <!-- سجل الحضور والغياب المباشر للطالب -->
                     <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-xl space-y-2">
                         <h3 class="font-bold text-md text-teal-900 flex items-center gap-1">سجل الحضور والغياب اليومي 📌</h3>
                         <div class="overflow-x-auto">
@@ -509,7 +517,7 @@
             document.getElementById('admin-tab-' + tab).classList.add('bg-blue-800', 'text-white');
         }
 
-        /* ------------------ إدارة الحضور والغياب المحدثة ------------------ */
+        /* ------------------ إدارة الحضور والغياب ------------------ */
         async function fetchClassStudentsForAttendance() {
             const grade = document.getElementById('attGradeSearch').value.trim();
             if (!grade) { alert('أدخل اسم الصف الدراسي'); return; }
@@ -756,16 +764,25 @@
             else alert('تم إرسال السؤال كواجب للمرحلة بنجاح!');
         }
 
+        /* إرسال الواجب المدرسي مع دعم مرفق صورة */
         async function sendHomework() {
             const grade = document.getElementById('hwGrade').value.trim();
             const subject = document.getElementById('hwSubject').value.trim();
             const text = document.getElementById('hwText').value.trim();
+            const imageUrl = document.getElementById('hwImage').value.trim();
 
-            if (!grade || !subject || !text) { alert('يرجى ملء كافة حقول الواجب'); return; }
+            if (!grade || !subject || !text) { alert('يرجى ملء كافة حقول الواجب الأساسية'); return; }
 
-            const { error } = await supabaseClient.from('homeworks').insert([{ grade: grade, subject: subject, homework_text: text }]);
+            const homeworkPayload = { grade: grade, subject: subject, homework_text: text };
+            if (imageUrl) { homeworkPayload.image_url = imageUrl; }
+
+            const { error } = await supabaseClient.from('homeworks').insert([homeworkPayload]);
             if (error) alert('خطأ: ' + error.message);
-            else { alert('تم إرسال الواجب بنجاح!'); document.getElementById('hwText').value = ''; }
+            else { 
+                alert('تم إرسال الواجب بنجاح!'); 
+                document.getElementById('hwText').value = ''; 
+                document.getElementById('hwImage').value = ''; 
+            }
         }
 
         /* إدارة الملاحظات والتوجيهات الإدارية */
@@ -914,13 +931,23 @@
             } else { container.innerHTML = '<p class="text-gray-500">لا توجد اختبارات محددة حالياً</p>'; }
         }
 
+        /* عرض الواجبات مع إمكانية عرض الصور المرفقة */
         async function loadStudentHomeworks(grade) {
             const container = document.getElementById('studentHomeworkList');
             const { data } = await supabaseClient.from('homeworks').select('*').eq('grade', grade);
             container.innerHTML = '';
             if (data && data.length > 0) {
                 data.forEach(h => {
-                    container.innerHTML += `<div class="p-2 border rounded bg-white text-xs"><b>المادة: ${h.subject}:</b> ${h.homework_text}</div>`;
+                    let imageHtml = '';
+                    if (h.image_url) {
+                        imageHtml = `<div class="mt-2"><a href="${h.image_url}" target="_blank"><img src="${h.image_url}" alt="صورة الواجب" class="max-h-48 rounded-lg border shadow-sm hover:opacity-90 transition"></a></div>`;
+                    }
+                    container.innerHTML += `
+                        <div class="p-3 border rounded bg-white text-xs space-y-1">
+                            <div><b>المادة ${h.subject}:</b> ${h.homework_text}</div>
+                            ${imageHtml}
+                        </div>
+                    `;
                 });
             } else { container.innerHTML = '<p class="text-xs text-gray-500">لا توجد واجبات مرصودة</p>'; }
         }
