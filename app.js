@@ -1,4 +1,4 @@
-// استبدل المفاتيح الخاصة بمشروعك في Supabase
+// استبدل المفاتيح الخاصة بك في Supabase
 const SUPABASE_URL = 'YOUR_SUPABASE_URL';
 const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -19,16 +19,15 @@ form.addEventListener('submit', async (e) => {
   const address = document.getElementById('address').value.trim();
   const phone = document.getElementById('phone').value.trim();
 
-  // إدخال البيانات في جدول students
+  // الإرسال إلى جدول student
   const { data, error } = await supabaseClient
-    .from('students')
+    .from('student')
     .insert([
       { 
-        student_name: studentName, 
+        name: studentName, 
         grade: grade, 
         address: address, 
-        phone_number: phone,
-        status: 'قيد المراجعة'
+        phone: phone 
       }
     ]);
 
@@ -36,6 +35,7 @@ form.addEventListener('submit', async (e) => {
     statusMsg.className = 'alert alert-danger';
     statusMsg.innerText = 'حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.';
     statusMsg.style.display = 'block';
+    console.error(error);
   } else {
     statusMsg.className = 'alert alert-success';
     statusMsg.innerText = 'تم إرسال طلب التسجيل بنجاح!';
