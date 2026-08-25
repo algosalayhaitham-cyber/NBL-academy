@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أكاديمية نبلاء اليمن الأهلية - النظام المطور والكامل</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
+            body { background: white; padding: 0; margin: 0; }
             .shadow-lg, .shadow-xl, .shadow-md { box-shadow: none !important; }
-            .printable-area { border: none !important; padding: 0 !important; }
+            .printable-area { border: none !important; padding: 0 !important; max-width: 100% !important; }
         }
 
         .paragraph-card {
@@ -80,7 +87,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 font-sans p-2 sm:p-4 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 font-sans p-2 sm:p-4 min-h-screen flex flex-col justify-between text-gray-800">
     
     <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full border border-gray-100 printable-area">
         
@@ -243,17 +250,33 @@
                     </div>
                 </div>
 
-                <!-- تبويب الفقرات والصور -->
+                <!-- تبويب الفقرات والصور والتحكم المدمج -->
                 <div id="admin-sub-paragraphs" class="admin-sub-content hidden space-y-6">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                        <h2 class="font-bold text-lg text-slate-800 border-b pb-2">إضافة وإنشاء الفقرات والصور 🖼️</h2>
+                        <h2 class="font-bold text-lg text-slate-800 border-b pb-2">شاشة إدارة الاختبارات والفقرات 🖼️</h2>
                         
+                        <!-- شريط الأدوات المدمج -->
+                        <div class="flex flex-wrap gap-2 border-b pb-3 no-print">
+                            <button id="createQuizBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs hover:bg-blue-700 transition inline-flex items-center gap-2" onclick="addParagraph()">
+                                <i class="fas fa-plus-circle"></i> إنشاء اختبار / فقرة جديدة
+                            </button>
+                            
+                            <button id="exportPdfBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xs hover:bg-red-700 transition inline-flex items-center gap-2" onclick="window.print()">
+                                <i class="fas fa-file-pdf"></i> حفظ كـ PDF / طباعة
+                            </button>
+
+                            <button id="deleteAllBtn" class="bg-gray-600 text-white px-4 py-2 rounded-lg font-bold text-xs hover:bg-gray-700 transition inline-flex items-center gap-2" onclick="clearAllParagraphs()">
+                                <i class="fas fa-trash-alt"></i> حذف كافة الفقرات
+                            </button>
+                        </div>
+
+                        <!-- نموذج رفع وإضافة الفقرات -->
                         <form id="paragraphsForm" onsubmit="saveAllParagraphs(event)">
                             <div id="paragraphsList"></div>
 
                             <div class="flex gap-2 mt-3">
-                                <button type="button" class="flex-1 bg-gray-600 text-white p-2 rounded-lg font-bold text-sm hover:bg-gray-700 transition" onclick="addParagraph()">+ إضافة فقرة جديدة</button>
-                                <button type="submit" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold text-sm hover:bg-blue-800 transition">💾 رفع وحفظ الكل</button>
+                                <button type="button" class="flex-1 bg-gray-600 text-white p-2 rounded-lg font-bold text-sm hover:bg-gray-700 transition" onclick="addParagraph()">+ إضافة فقرة جديد</button>
+                                <button type="submit" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold text-sm hover:bg-blue-800 transition">💾 رفع وحفظ الكل في السحابة</button>
                             </div>
                         </form>
 
@@ -263,7 +286,7 @@
 
                         <div id="savedSection" class="hidden mt-4 border-t pt-4">
                             <h3 class="font-bold text-md text-gray-800 mb-3">الفقرات المحفوظة من قاعدة البيانات:</h3>
-                            <div id="savedContainer"></div>
+                            <div id="savedContainer" class="space-y-3"></div>
                         </div>
                     </div>
                 </div>
@@ -936,7 +959,6 @@
 
         /* ------------------ نظام الرسائل المطور والردود ------------------ */
 
-        // إرسال توجيه/رسالة من الإدارة
         async function sendAdminMessage() {
             const target = document.getElementById('adminMsgTarget').value;
             const code = document.getElementById('adminMsgCode').value.trim();
@@ -967,7 +989,6 @@
             } catch(e) { alert('فشل رفع الصورة: ' + e.message); }
         }
 
-        // إرسال رسالة من المعلم إلى الإدارة
         async function sendTeacherToAdminMsg() {
             const text = document.getElementById('teacherToAdminText').value.trim();
             if (!text) { alert('أدخل نص الرسالة'); return; }
@@ -987,7 +1008,6 @@
             }
         }
 
-        // إرسال رسالة من ولي الأمر إلى الإدارة
         async function sendParentToAdminMsg() {
             const text = document.getElementById('parentToAdminText').value.trim();
             if (!text) { alert('أدخل نص الرسالة'); return; }
@@ -1007,7 +1027,6 @@
             }
         }
 
-        // إرسال رد على رسالة معينة (Reply)
         async function sendReply(parentMsgId, replyTextInputId, refreshCallback) {
             const textInput = document.getElementById(replyTextInputId);
             const text = textInput ? textInput.value.trim() : '';
@@ -1033,13 +1052,11 @@
             }
         }
 
-        // فتح/إغلاق مربع الرد
         function toggleReplyBox(boxId) {
             const box = document.getElementById(boxId);
             if (box) box.classList.toggle('hidden');
         }
 
-        // تحميل وقراءة الردود المرفقة بالرسالة
         async function renderRepliesHtml(msgId) {
             const { data: replies } = await supabaseClient
                 .from('messages')
@@ -1063,7 +1080,6 @@
             return html;
         }
 
-        // عرض رسائل الإدارة مع الردود
         async function loadAdminMessages() {
             const container = document.getElementById('adminMessagesList');
             const { data } = await supabaseClient.from('messages').select('*').is('parent_id', null).order('created_at', { ascending: false });
@@ -1102,7 +1118,6 @@
             }
         }
 
-        // عرض رسائل المعلم مع الردود
         async function loadTeacherMessages() {
             const container = document.getElementById('teacherMessagesContainer');
             const { data } = await supabaseClient.from('messages').select('*').is('parent_id', null).eq('target_type', 'teacher');
@@ -1140,7 +1155,6 @@
             }
         }
 
-        // عرض رسائل الطالب/ولي الأمر مع الردود
         async function loadStudentMessages(code) {
             const container = document.getElementById('studentMessagesContainer');
             if (!container) return;
@@ -1180,26 +1194,38 @@
             }
         }
 
-        /* ------------------ الفقرات والصور ------------------ */
+        /* ------------------ الفقرات والصور والأدوات المدمجة ------------------ */
         function addParagraph() {
             paragraphCount++;
             const list = document.getElementById('paragraphsList');
             const card = document.createElement('div');
-            card.className = 'paragraph-card';
+            card.className = 'paragraph-card item-card';
             card.id = `paragraph-${paragraphCount}`;
 
             card.innerHTML = `
-                <button type="button" class="text-red-600 text-xs font-bold float-left mb-1" onclick="this.parentElement.remove()">حذف الفقرة ✕</button>
-                <textarea placeholder="اكتب نص الفقرة أو الشرح هنا..." required></textarea>
-                
-                <div class="flex items-center gap-2 mt-2">
-                    <label for="file-${paragraphCount}" class="file-upload-btn">📷 اختيار صورة مرفقة</label>
-                    <input type="file" id="file-${paragraphCount}" class="hidden" accept="image/*" onchange="handleImageUpload(event, this)">
-                </div>
+                <div class="w-full space-y-2">
+                    <div class="flex justify-between items-center border-b pb-1">
+                        <span class="font-bold text-xs text-slate-700">الفقرة رقم #${paragraphCount}</span>
+                        <button type="button" class="btn-delete text-red-600 hover:text-red-800 text-xs font-bold" onclick="this.closest('.paragraph-card').remove()">حذف الفقرة ✕</button>
+                    </div>
+                    <textarea placeholder="اكتب نص الفقرة أو الشرح هنا..." class="w-full border rounded-lg p-2 text-xs" required></textarea>
+                    
+                    <div class="flex items-center gap-2 mt-2">
+                        <label for="file-${paragraphCount}" class="file-upload-btn">📷 اختيار صورة مرفقة</label>
+                        <input type="file" id="file-${paragraphCount}" class="hidden" accept="image/*" onchange="handleImageUpload(event, this)">
+                    </div>
 
-                <div class="image-preview"></div>
+                    <div class="image-preview"></div>
+                </div>
             `;
             list.appendChild(card);
+        }
+
+        function clearAllParagraphs() {
+            if (confirm("هل أنت تأكد من إزالة وتفريغ جميع الفقرات الحالية؟")) {
+                document.getElementById('paragraphsList').innerHTML = '';
+                paragraphCount = 0;
+            }
         }
 
         function handleImageUpload(event, inputElement) {
@@ -1254,6 +1280,7 @@
 
                 alert('تم رفع الصور وحفظ الفقرات بنجاح! 🎉');
                 document.getElementById('paragraphsList').innerHTML = '';
+                paragraphCount = 0;
                 addParagraph();
             } catch (err) {
                 console.error(err);
@@ -1285,7 +1312,7 @@
                 container.innerHTML = '';
                 data.forEach(item => {
                     const itemDiv = document.createElement('div');
-                    itemDiv.className = 'saved-item';
+                    itemDiv.className = 'saved-item border rounded p-3 bg-slate-50 space-y-2';
                     
                     let imgHtml = item.image_url 
                         ? `<img src="${item.image_url}" alt="صورة الفقرة" class="max-h-48 rounded mt-2 border">` 
@@ -1397,7 +1424,32 @@
             }
         }
 
-        /* الإحصائيات والتصفيات */
+        /* الإحصائيات والتصفيات والوظائف الإدارية */
+        async function addStudent() {
+            const code = document.getElementById('addCode').value.trim();
+            const name = document.getElementById('addName').value.trim();
+            const grade = document.getElementById('addGrade').value.trim();
+            const phone = document.getElementById('addPhone').value.trim();
+
+            if (!code || !name) { alert('أدخل كود واسم الطالب'); return; }
+
+            const { error } = await supabaseClient.from('student').insert([{ id: code, name: name, grade: grade, phone: phone }]);
+            if (error) alert('خطأ: ' + error.message);
+            else { alert('تم تسجيل الطالب بنجاح'); loadAllStudents(); }
+        }
+
+        async function saveFee() {
+            const code = document.getElementById('fCode').value.trim();
+            const total = parseFloat(document.getElementById('fTotal').value) || 0;
+            const paid = parseFloat(document.getElementById('fPaid').value) || 0;
+
+            if (!code) { alert('أدخل كود الطالب'); return; }
+
+            const { error } = await supabaseClient.from('fees').upsert([{ student_id: code, total_fee: total, paid_fee: paid }]);
+            if (error) alert('خطأ: ' + error.message);
+            else { alert('تم حفظ الرسوم بنجاح'); loadAdminDashboardStats(); }
+        }
+
         async function loadAdminDashboardStats() {
             const { data: stData } = await supabaseClient.from('student').select('id');
             const { data: feesData } = await supabaseClient.from('fees').select('total_fee, paid_fee');
@@ -1712,7 +1764,7 @@
             } else { container.innerHTML = '<p class="text-xs text-gray-500">لا توجد واجبات مرصودة</p>'; }
         }
 
-        /* الطباعة */
+        /* الطباعة والسندات */
         async function printStudentFullGradeCard() { generateAdminGradeCard(currentStudentCode); }
         async function printStudentFeeReceipt() { generateAdminReceipt(currentStudentCode); }
 
@@ -1735,9 +1787,7 @@
                 grades.forEach(g => {
                     html += `<tr><td class="border p-2">${g.subject}</td><td class="border p-2 font-bold">${g.score}</td><td class="border p-2">${g.notes || '-'}</td></tr>`;
                 });
-            } else {
-                html += `<tr><td colspan="3" class="p-2 text-center">لا توجد درجات مرصودة</td></tr>`;
-            }
+            } else { html += `<tr><td colspan="3" class="p-2 text-center">لا توجد درجات</td></tr>`; }
             html += `</tbody></table>`;
 
             document.getElementById('printDocContent').innerHTML = html;
@@ -1749,45 +1799,24 @@
             const { data: fee } = await supabaseClient.from('fees').select('*').eq('student_id', studentCode).maybeSingle();
 
             document.getElementById('printDocTitle').innerText = 'سند سداد رسوم دراسية';
-
-            let paid = fee ? fee.paid_fee : 0;
-            let total = fee ? fee.total_fee : 0;
-            let rem = total - paid;
+            
+            const total = fee ? fee.total_fee : 0;
+            const paid = fee ? fee.paid_fee : 0;
+            const rem = total - paid;
 
             let html = `
-                <div class="border p-4 rounded space-y-2">
-                    <p><b>وصلنا من الطالب:</b> ${student.name} (كود: ${student.id})</p>
+                <div class="border p-4 rounded space-y-2 leading-relaxed">
+                    <p><b>وصلنا من الطالب:</b> ${student.name} (الكود: ${student.id})</p>
                     <p><b>الصف الدراسي:</b> ${student.grade || '-'}</p>
-                    <p><b>المبلغ المدفوع:</b> <span class="font-bold text-lg">${paid} ريال</span></p>
-                    <p><b>إجمالي المقرر:</b> ${total} ريال | <b>المتبقي:</b> ${rem} ريال</p>
+                    <p><b>إجمالي الرسوم المستحقة:</b> ${total} ريال</p>
+                    <p><b>المبلغ المدفوع:</b> ${paid} ريال</p>
+                    <p><b>المبلغ المتبقي:</b> ${rem} ريال</p>
+                    <p><b>تاريخ الإصدار:</b> ${new Date().toLocaleDateString('ar-YE')}</p>
                 </div>
             `;
 
             document.getElementById('printDocContent').innerHTML = html;
             window.print();
-        }
-
-        async function addStudent() {
-            const code = document.getElementById('addCode').value.trim();
-            const name = document.getElementById('addName').value.trim();
-            const grade = document.getElementById('addGrade').value.trim();
-            const phone = document.getElementById('addPhone').value.trim();
-
-            if (!code || !name) { alert('أدخل الكود والاسم'); return; }
-            const { error } = await supabaseClient.from('student').insert([{ id: code, name: name, grade: grade, phone: phone }]);
-            if (error) alert('خطأ: ' + error.message);
-            else { alert('تم حفظ الطالب بنجاح!'); loadAllStudents(); loadAdminDashboardStats(); }
-        }
-
-        async function saveFee() {
-            const code = document.getElementById('fCode').value.trim();
-            const total = document.getElementById('fTotal').value;
-            const paid = document.getElementById('fPaid').value;
-
-            if (!code) { alert('أدخل الكود'); return; }
-            const { error } = await supabaseClient.from('fees').upsert([{ student_id: code, total_fee: total, paid_fee: paid }]);
-            if (error) alert('خطأ: ' + error.message);
-            else { alert('تم حفظ الرسوم بنجاح!'); loadAdminDashboardStats(); }
         }
     </script>
 </body>
