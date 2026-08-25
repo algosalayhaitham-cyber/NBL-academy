@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار إلكتروني موضوعي - الرياضيات والإنجليزي</title>
+  <style>
+    :root {
+      --primary-color: #2b6cb0;
+      --secondary-color: #319795;
+      --bg-color: #f7fafc;
+      --card-bg: #ffffff;
+      --text-color: #2d3748;
+      --correct-color: #38a169;
+      --wrong-color: #e53e3e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .quiz-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+
+    .subject-selector {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .btn-subject {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-subject:hover, .btn-subject.active {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    .quiz-body {
+      display: none;
+    }
+
+    .question-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* يدعم اتجاه النص الإنجليزي من اليسار لليمين عند الحاجة */
+    .ltr-text {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .options-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+
+    .option-item {
+      background-color: #edf2f7;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+
+    .option-item:hover {
+      background-color: #e2e8f0;
+    }
+
+    .option-item.selected {
+      border-color: var(--primary-color);
+      background-color: #ebf8ff;
+    }
+
+    .btn-next {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-next:hover {
+      background-color: #2c7a7b;
+    }
+
+    .result-box {
+      text-align: center;
+      display: none;
+    }
+
+    .score-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card">
+  <h2>منصة الاختبارات الموضوعية</h2>
+
+  <!-- اختيار المادة -->
+  <div id="subject-section">
+    <p style="text-align:center;">اختر المادة للبدء بالامتحان:</p>
+    <div class="subject-selector">
+      <button class="btn-subject" onclick="startQuiz('math')">الرياضيات 📐</button>
+      <button class="btn-subject" onclick="startQuiz('english')">English 🔤</button>
+    </div>
+  </div>
+
+  <!-- منطقة الأسئلة -->
+  <div id="quiz-section" class="quiz-body">
+    <div id="question-number" style="color: #718096; font-size: 14px; margin-bottom: 5px;"></div>
+    <div id="question-text" class="question-title"></div>
+    <ul id="options-list" class="options-list"></ul>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">التالي</button>
+  </div>
+
+  <!-- نتيجة الاختبار -->
+  <div id="result-section" class="result-box">
+    <h3>تم إنهاء الاختبار بنجاح! 🎉</h3>
+    <div class="score-text" id="final-score"></div>
+    <button class="btn-subject" onclick="resetQuiz()">إعادة الاختبار</button>
+  </div>
+</div>
+
+<script>
+  // بيانات الأسئلة للمادتين
+  const quizData = {
+    math: [
+      {
+        question: "ما هو ناتج حل المعادلة: 2س + 5 = 15 ؟",
+        options: ["س = 3", "س = 5", "س = 10", "س = 20"],
+        correct: 1
+      },
+      {
+        question: "قيمة النسب التقريبية (π) تساوي تقريباً:",
+        options: ["3.14", "2.14", "3.41", "4.13"],
+        correct: 0
+      },
+      {
+        question: "مجموع زوايا المثلث الداخلية يساوي:",
+        options: ["90°", "360°", "180°", "270°"],
+        correct: 2
+      }
+    ],
+    english: [
+      {
+        question: "Choose the correct verb: She _____ to school every day.",
+        options: ["go", "goes", "going", "gone"],
+        correct: 1,
+        isLtr: true
+      },
+      {
+        question: "What is the synonym of 'Happy'?",
+        options: ["Sad", "Angry", "Joyful", "Tired"],
+        correct: 2,
+        isLtr: true
+      },
+      {
+        question: "Fill in the blank: They _____ studying for the math exam yesterday.",
+        options: ["are", "were", "was", "is"],
+        correct: 1,
+        isLtr: true
+      }
+    ]
+  };
+
+  let currentSubject = '';
+  let currentQuestions = [];
+  let currentQuestionIndex = 0;
+  let selectedOption = null;
+  let score = 0;
+
+  function startQuiz(subject) {
+    currentSubject = subject;
+    currentQuestions = quizData[subject];
+    currentQuestionIndex = 0;
+    score = 0;
+
+    document.getElementById('subject-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'block';
+
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    selectedOption = null;
+    const q = currentQuestions[currentQuestionIndex];
+    
+    document.getElementById('question-number').innerText = `السؤال ${currentQuestionIndex + 1} من ${currentQuestions.length}`;
+    
+    const qText = document.getElementById('question-text');
+    qText.innerText = q.question;
+    
+    // ضبط الاتجاه للإنجليزي
+    if (q.isLtr) {
+      qText.classList.add('ltr-text');
+    } else {
+      qText.classList.remove('ltr-text');
+    }
+
+    const optionsList = document.getElementById('options-list');
+    optionsList.innerHTML = '';
+
+    q.options.forEach((opt, index) => {
+      const li = document.createElement('li');
+      li.className = 'option-item';
+      if (q.isLtr) li.classList.add('ltr-text');
+      li.innerText = opt;
+      li.onclick = () => selectOption(index, li);
+      optionsList.appendChild(li);
+    });
+
+    document.getElementById('btn-next').innerText = 
+      (currentQuestionIndex === currentQuestions.length - 1) ? 'عرض النتيجة' : 'التالي';
+  }
+
+  function selectOption(index, element) {
+    selectedOption = index;
+    const items = document.querySelectorAll('.option-item');
+    items.forEach(item => item.classList.remove('selected'));
+    element.classList.add('selected');
+  }
+
+  function nextQuestion() {
+    if (selectedOption === null) {
+      alert("يرجى اختيار إجابة أولاً!");
+      return;
+    }
+
+    if (selectedOption === currentQuestions[currentQuestionIndex].correct) {
+      score++;
+    }
+
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < currentQuestions.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('final-score').innerText = `${score} / ${currentQuestions.length}`;
+  }
+
+  function resetQuiz() {
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('subject-section').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
