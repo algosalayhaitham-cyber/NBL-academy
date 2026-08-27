@@ -797,7 +797,8 @@
 <!-- JavaScript -->
 <script>
     /* ==============================================================
-       CONFIGURATION - استبدل ببيانات مشروع Supabase الخاص بك
+       ⚠️ IMPORTANT: استبدل هذه البيانات ببيانات مشروع Supabase الخاص بك
+       اذهب إلى: Settings → API في لوحة تحكم Supabase
     ============================================================== */
     const SUPABASE_URL = "https://YOUR_SUPABASE_URL.supabase.co";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
@@ -805,25 +806,20 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* ==============================================================
-       أسماء الجداول الصحيحة حسب قاعدة البيانات
+       أسماء الجداول - مطابقة تماماً لقاعدة البيانات الخاصة بك
     ============================================================== */
     const TABLES = {
-        STUDENTS: 'student',           // ✅ مفرد بدون s
-        PARENTS: 'parents',            // ✅ جمع مع s
-        STUDENT_PARENTS: 'parent_students',  // ✅
-        GRADES: 'grades',              // ✅
-        FEES: 'fees',                  // ✅
-        BADGES: 'badges',              // ✅ بدون student_
-        MESSAGES: 'messages',          // ✅
-        HOMEWORK: 'homeworks',         // ✅ مع s
-        EXAMS: 'exams',                // ✅ بدون schedule_
-        POSTS: 'posts',                // ✅
-        TEACHERS: 'teachers',          // ✅
-        ATTENDANCE: 'attendance',      // ✅
-        QUESTION_BANK: 'question_bank', // ✅
-        QUIZ_RESULTS: 'quiz_results',   // ✅
-        APPLICATIONS: 'student_applications', // ✅
-        TRANSACTIONS: 'transactions'    // ✅
+        STUDENTS: 'student',
+        PARENTS: 'parents',
+        STUDENT_PARENTS: 'parent_students',
+        GRADES: 'grades',
+        FEES: 'fees',
+        BADGES: 'badges',
+        MESSAGES: 'messages',
+        HOMEWORK: 'homeworks',
+        EXAMS: 'exams',
+        POSTS: 'posts',
+        TEACHERS: 'teachers'
     };
 
     /* ==============================================================
