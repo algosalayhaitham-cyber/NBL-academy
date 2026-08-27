@@ -797,7 +797,7 @@
 <!-- JavaScript -->
 <script>
     /* ==============================================================
-       CONFIGURATION - Replace with your Supabase credentials
+       CONFIGURATION - استبدل ببيانات مشروع Supabase الخاص بك
     ============================================================== */
     const SUPABASE_URL = "https://YOUR_SUPABASE_URL.supabase.co";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
@@ -805,20 +805,25 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     /* ==============================================================
-       TABLE NAMES
+       أسماء الجداول الصحيحة حسب قاعدة البيانات
     ============================================================== */
     const TABLES = {
-        STUDENTS: 'students',
-        PARENTS: 'parents',
-        TEACHERS: 'teachers',
-        GRADES: 'grades',
-        FEES: 'fees',
-        BADGES: 'student_badges',
-        MESSAGES: 'messages',
-        HOMEWORK: 'homework',
-        EXAMS: 'exam_schedules',
-        POSTS: 'posts',
-        PARAGRAPHS: 'paragraphs'
+        STUDENTS: 'student',           // ✅ مفرد بدون s
+        PARENTS: 'parents',            // ✅ جمع مع s
+        STUDENT_PARENTS: 'parent_students',  // ✅
+        GRADES: 'grades',              // ✅
+        FEES: 'fees',                  // ✅
+        BADGES: 'badges',              // ✅ بدون student_
+        MESSAGES: 'messages',          // ✅
+        HOMEWORK: 'homeworks',         // ✅ مع s
+        EXAMS: 'exams',                // ✅ بدون schedule_
+        POSTS: 'posts',                // ✅
+        TEACHERS: 'teachers',          // ✅
+        ATTENDANCE: 'attendance',      // ✅
+        QUESTION_BANK: 'question_bank', // ✅
+        QUIZ_RESULTS: 'quiz_results',   // ✅
+        APPLICATIONS: 'student_applications', // ✅
+        TRANSACTIONS: 'transactions'    // ✅
     };
 
     /* ==============================================================
@@ -1348,7 +1353,7 @@
         }
 
         const { error: linkErr } = await supabaseClient
-            .from('parent_students')
+            .from(TABLES.STUDENT_PARENTS)
             .insert([{ parent_phone: phone, student_id: studentCode }]);
 
         if (linkErr) {
@@ -1397,8 +1402,8 @@
         select.innerHTML = '<option value="">جاري التحميل...</option>';
 
         const { data: links, error } = await supabaseClient
-            .from('parent_students')
-            .select('student_id, students(id, name, grade)')
+            .from(TABLES.STUDENT_PARENTS)
+            .select('student_id, student(id, name, grade)')
             .eq('parent_phone', currentUserId);
 
         if (error) {
@@ -1409,7 +1414,7 @@
         select.innerHTML = '';
         if (links && links.length > 0) {
             links.forEach(item => {
-                const st = item.students;
+                const st = item.student;
                 if (st) {
                     select.innerHTML += `<option value="${st.id}">${st.name} (${st.grade || 'غير محدد'}) - [${st.id}]</option>`;
                 }
@@ -1444,7 +1449,7 @@
         }
 
         const { error: linkErr } = await supabaseClient
-            .from('parent_students')
+            .from(TABLES.STUDENT_PARENTS)
             .insert([{ parent_phone: currentUserId, student_id: code }]);
 
         if (linkErr) {
