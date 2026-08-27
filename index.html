@@ -105,7 +105,6 @@
         .toast-warning { background: #f59e0b; }
         .student-row:hover { background: #eff6ff !important; }
         .form-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        .bg-main { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
@@ -708,14 +707,12 @@
 
 <script>
     // ============================================================
-    // ✅ بيانات Supabase - استخدم المفتاح الذي نسخته من الصورة
+    // ✅ تم تحديث بيانات Supabase الصحيحة
     // ============================================================
-    const SUPABASE_URL = "https://NBL.Academic.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_";
+    const SUPABASE_URL = "https://axhddoktuhjhscovstbr.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4aGRkb2t0dWhqaHNjb3ZzdGJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNjg3ODgsImV4cCI6MjEwMjc0NDc4OH0.2UrAE8Oj6PJ39cODWJ97jjYbzlS1GMNToBbpd0cegu8";
 
-    console.log("🔗 محاولة الاتصال بـ:", SUPABASE_URL);
-    console.log("🔑 المفتاح:", SUPABASE_ANON_KEY);
-
+    console.log("🔗 الاتصال بـ:", SUPABASE_URL);
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // اختبار الاتصال فوراً
@@ -731,7 +728,6 @@
         })
         .catch(err => {
             console.error("❌ خطأ:", err);
-            showToast("⚠️ خطأ في الاتصال: " + err.message, 'error');
         });
 
     const TABLES = {
@@ -2171,4 +2167,4 @@
     });
 </script>
 </body>
-    </html>
+    </html> 
