@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أكاديمية نبلاء اليمن الأهلية - المنظومة الموحدة الشاملة</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
@@ -21,7 +18,6 @@
             #printTemplate { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
             .printable-area { border: none !important; padding: 0 !important; max-width: 100% !important; }
         }
-
         .paragraph-card {
             background: #fafafa;
             border: 1px solid #e1e4e8;
@@ -79,13 +75,6 @@
             padding: 12px;
             margin-bottom: 12px;
         }
-        .reply-box {
-            background-color: #f1f5f9;
-            border-right: 3px solid #0284c7;
-            margin-top: 8px;
-            padding: 8px;
-            border-radius: 6px;
-        }
         .portal-card { transition: all 0.3s ease; }
         .portal-dashboard { animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -116,14 +105,13 @@
         .toast-warning { background: #f59e0b; }
         .student-row:hover { background: #eff6ff !important; }
         .form-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .bg-main { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-<!-- Toast Notifications -->
 <div id="toast" class="toast"></div>
 
-<!-- Header / Nav -->
 <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white shadow-md sticky top-0 z-50 no-print">
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center space-x-3 space-x-reverse">
@@ -142,17 +130,14 @@
     </div>
 </header>
 
-<!-- Main Container -->
 <main class="max-w-7xl mx-auto px-2 sm:px-4 py-6 flex-grow w-full">
 
-    <!-- ================= 1. شاشة اختيار بوابة الدخول والتسجيل ================= -->
     <section id="portalSelection" class="space-y-6 no-print">
         <div class="text-center max-w-xl mx-auto space-y-2">
             <h2 class="text-2xl sm:text-3xl font-black text-blue-950">مرحباً بكم في بوابة التواصل والخدمات الذكية</h2>
             <p class="text-xs text-amber-600 font-bold">نبني أساساً... نصنع مستقبلاً</p>
             <p class="text-[11px] text-gray-500">إشراف وإعداد: الأستاذ هيثم علي صالح القصلي</p>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto pt-4">
             <div onclick="showPortal('studentAuth')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 cursor-pointer text-center space-y-3 transition group">
                 <div class="w-14 h-14 mx-auto bg-blue-50 text-blue-900 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">
@@ -161,7 +146,6 @@
                 <h3 class="font-extrabold text-blue-950">بوابة الطالب</h3>
                 <p class="text-xs text-gray-500">استعلام عن الدرجات، الواجبات، الحضور، والأوسمة بالكود</p>
             </div>
-
             <div onclick="showPortal('parentAuth')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 cursor-pointer text-center space-y-3 transition group">
                 <div class="w-14 h-14 mx-auto bg-emerald-50 text-emerald-800 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">
                     <i class="fa-solid fa-users-between-lines"></i>
@@ -169,7 +153,6 @@
                 <h3 class="font-extrabold text-blue-950">بوابة ولي الأمر</h3>
                 <p class="text-xs text-gray-500">متابعة كافة الأبناء، التواصل مع الإدارة، والتنبيهات</p>
             </div>
-
             <div onclick="showPortal('teacherAuth')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 cursor-pointer text-center space-y-3 transition group">
                 <div class="w-14 h-14 mx-auto bg-purple-50 text-purple-900 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">
                     <i class="fa-solid fa-chalkboard-user"></i>
@@ -177,7 +160,6 @@
                 <h3 class="font-extrabold text-blue-950">بوابة المعلم</h3>
                 <p class="text-xs text-gray-500">رصد الحضور والدرجات، الواجبات، والتواصل مع الإدارة</p>
             </div>
-
             <div onclick="showPortal('adminAuth')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-slate-200 cursor-pointer text-center space-y-3 transition group">
                 <div class="w-14 h-14 mx-auto bg-amber-50 text-amber-800 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">
                     <i class="fa-solid fa-user-shield"></i>
@@ -188,9 +170,6 @@
         </div>
     </section>
 
-    <!-- ================= 2. شاشات تسجيل الدخول والإنشاء ================= -->
-
-    <!-- دخول الطالب -->
     <section id="studentAuth" class="portal-card hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border space-y-4 no-print">
         <button onclick="showPortal('portalSelection')" class="text-xs text-gray-500 hover:text-blue-900"><i class="fa-solid fa-arrow-right ml-1"></i> العودة</button>
         <h3 class="font-bold text-lg text-blue-950 border-b pb-2">تسجيل دخول الطالب</h3>
@@ -203,15 +182,12 @@
         </div>
     </section>
 
-    <!-- دخول وحساب ولي الأمر -->
     <section id="parentAuth" class="portal-card hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border space-y-4 no-print">
         <button onclick="showPortal('portalSelection')" class="text-xs text-gray-500 hover:text-blue-900"><i class="fa-solid fa-arrow-right ml-1"></i> العودة</button>
-
         <div class="flex border-b text-sm font-bold">
             <button onclick="switchParentTab('login')" id="parentTabLogin" class="flex-1 py-2 text-center text-emerald-800 border-b-2 border-emerald-800">تسجيل دخول</button>
             <button onclick="switchParentTab('register')" id="parentTabRegister" class="flex-1 py-2 text-center text-gray-500">حساب جديد</button>
         </div>
-
         <div id="parentLoginForm" class="space-y-3">
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1">رقم الهاتف</label>
@@ -226,7 +202,6 @@
                 <button type="button" onclick="toggleResetPasswordModal(true)" class="text-xs text-emerald-800 hover:underline font-bold">نسيت كلمة المرور؟ استعادة الحساب 🔑</button>
             </div>
         </div>
-
         <div id="parentRegisterForm" class="space-y-3 hidden">
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1">الاسم الكامل لولي الأمر</label>
@@ -248,7 +223,6 @@
         </div>
     </section>
 
-    <!-- دخول المعلم -->
     <section id="teacherAuth" class="portal-card hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border space-y-4 no-print">
         <button onclick="showPortal('portalSelection')" class="text-xs text-gray-500 hover:text-purple-900"><i class="fa-solid fa-arrow-right ml-1"></i> العودة</button>
         <h3 class="font-bold text-lg text-purple-950 border-b pb-2">دخول المعلم / المعلمة</h3>
@@ -268,7 +242,6 @@
         </div>
     </section>
 
-    <!-- دخول الإدارة -->
     <section id="adminAuth" class="portal-card hidden max-w-md mx-auto bg-white p-6 rounded-2xl shadow-md border space-y-4 no-print">
         <button onclick="showPortal('portalSelection')" class="text-xs text-gray-500 hover:text-amber-800"><i class="fa-solid fa-arrow-right ml-1"></i> العودة</button>
         <h3 class="font-bold text-lg text-amber-950 border-b pb-2">تسجيل دخول الإدارة</h3>
@@ -285,7 +258,6 @@
         </div>
     </section>
 
-    <!-- ================= 3. لوحة ولي الأمر والطالب ================= -->
     <section id="parentDashboard" class="portal-dashboard hidden space-y-6">
         <div class="bg-emerald-900 text-white p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow no-print">
             <div>
@@ -301,35 +273,24 @@
                 </button>
             </div>
         </div>
-
         <div id="childrenSelectorContainer" class="bg-white p-4 rounded-xl border shadow-sm space-y-2 no-print">
             <label class="block text-xs font-bold text-gray-700">اختر الابن لمشاهدة بياناته وتقاريره:</label>
             <select id="parentChildrenSelect" onchange="onParentSelectChild()" class="w-full border rounded-lg p-2 text-sm font-bold bg-slate-50 text-blue-950"></select>
         </div>
-
         <div id="parentChildDataContainer" class="space-y-6 printable-area">
             <div id="studentBasicInfo" class="bg-white p-4 rounded-xl border shadow-sm"></div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3">
                     <h3 class="font-bold text-sm text-blue-950 border-b pb-2"><i class="fa-solid fa-chart-bar text-amber-500 ml-1"></i> نتائج الدرجات والتقييمات</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-right border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100">
-                                    <th class="p-2 border">المادة</th>
-                                    <th class="p-2 border">الدرجة</th>
-                                    <th class="p-2 border">ملاحظة</th>
-                                </tr>
-                            </thead>
+                            <thead><tr class="bg-slate-100"><th class="p-2 border">المادة</th><th class="p-2 border">الدرجة</th><th class="p-2 border">ملاحظة</th></tr></thead>
                             <tbody id="studentGradesBody"></tbody>
                         </table>
                     </div>
                 </div>
-
                 <div id="studentFeeInfo" class="bg-white p-4 rounded-xl border shadow-sm space-y-3"></div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white p-4 rounded-xl border shadow-sm space-y-2">
                     <h4 class="font-bold text-xs text-indigo-900 border-b pb-1"><i class="fa-solid fa-book ml-1"></i> الواجبات المنزلية</h4>
@@ -345,7 +306,6 @@
                 </div>
             </div>
         </div>
-
         <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3 no-print">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-comments text-emerald-600 ml-1"></i> صندوق الرسائل مع إدارة المدرسة</h3>
@@ -355,7 +315,6 @@
         </div>
     </section>
 
-    <!-- ================= 4. لوحة المعلم ================= -->
     <section id="teacherDashboard" class="portal-dashboard hidden space-y-6">
         <div class="bg-purple-900 text-white p-4 rounded-2xl flex justify-between items-center shadow no-print">
             <div>
@@ -366,7 +325,6 @@
                 <i class="fa-solid fa-paper-plane ml-1"></i> مراسلة الإدارة
             </button>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 no-print">
             <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3">
                 <h3 class="font-bold text-xs text-purple-900 border-b pb-2"><i class="fa-solid fa-pen-to-square ml-1"></i> رصد درجات الصف</h3>
@@ -383,7 +341,6 @@
                     <button onclick="saveBulkGrades()" class="w-full bg-emerald-700 text-white font-bold py-1.5 rounded text-xs">حفظ كل الدرجات ⚡</button>
                 </div>
             </div>
-
             <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3">
                 <h3 class="font-bold text-xs text-purple-900 border-b pb-2"><i class="fa-solid fa-upload ml-1"></i> إرسال واجب منزلي</h3>
                 <div class="space-y-2">
@@ -394,7 +351,6 @@
                     <button onclick="sendHomework()" class="w-full bg-purple-900 text-white font-bold py-1.5 rounded text-xs">نشر الواجب</button>
                 </div>
             </div>
-
             <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3">
                 <h3 class="font-bold text-xs text-purple-900 border-b pb-2"><i class="fa-solid fa-medal ml-1"></i> منح وسام لطالب</h3>
                 <div class="space-y-2">
@@ -409,7 +365,6 @@
                 </div>
             </div>
         </div>
-
         <div class="bg-white p-4 rounded-xl border shadow-sm space-y-3 no-print">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="font-bold text-sm text-slate-800"><i class="fa-solid fa-comments text-purple-800 ml-1"></i> صندوق المراسلات مع الإدارة</h3>
@@ -419,7 +374,6 @@
         </div>
     </section>
 
-    <!-- ================= 5. لوحة الإدارة الشاملة ================= -->
     <section id="adminDashboard" class="portal-dashboard hidden space-y-6">
         <div class="bg-amber-900 text-white p-4 rounded-2xl flex flex-wrap justify-between items-center gap-2 shadow no-print">
             <div>
@@ -430,7 +384,6 @@
                 <i class="fa-solid fa-paper-plane ml-1"></i> إرسال رسالة جديدة
             </button>
         </div>
-
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print">
             <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl text-center">
                 <p class="text-xs text-blue-700 font-bold">إجمالي الطلاب</p>
@@ -449,7 +402,6 @@
                 <p id="statAttendance" class="text-xl font-extrabold text-purple-900 mt-1">نشط 🟢</p>
             </div>
         </div>
-
         <div class="flex flex-wrap gap-2 border-b pb-3 no-print">
             <button onclick="showAdminTab('students')" id="admin-tab-students" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-blue-800 text-white text-xs sm:text-sm shadow-sm transition">الطلاب والتصفية 👥</button>
             <button onclick="showAdminTab('paragraphs')" id="admin-tab-paragraphs" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">إدارة الصور والفقرات 🖼️</button>
@@ -460,65 +412,45 @@
             <button onclick="showAdminTab('transactions'); loadTransactions();" id="admin-tab-transactions" class="admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition">سجل المعاملات والتوثيق 📜</button>
         </div>
 
-        <!-- تبويب 1: الطلاب والتصفية المتقدمة -->
         <div id="admin-sub-students" class="admin-sub-content space-y-6">
             <div class="bg-blue-50/70 p-4 rounded-xl border border-blue-200 no-print space-y-3">
                 <h2 class="font-bold text-lg text-blue-900 flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus"></i>
-                    إضافة طالب جديد
+                    <i class="fa-solid fa-user-plus"></i> إضافة طالب جديد
                 </h2>
-                
                 <div id="addStudentLoading" class="hidden text-center text-blue-700 font-bold py-2">
-                    <i class="fa-solid fa-spinner fa-spin ml-2"></i>
-                    جاري حفظ البيانات...
+                    <i class="fa-solid fa-spinner fa-spin ml-2"></i> جاري حفظ البيانات...
                 </div>
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">كود الطالب <span class="text-red-500">*</span></label>
-                        <input type="text" id="addCode" placeholder="مثال: STU-1001 أو 1001" 
-                               class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <input type="text" id="addCode" placeholder="مثال: STU-1001 أو 1001" class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
                         <p class="text-[10px] text-gray-400 mt-1">سيتم إضافة STU- تلقائياً إذا لم تكتبها</p>
                     </div>
-                    
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">اسم الطالب الرباعي <span class="text-red-500">*</span></label>
-                        <input type="text" id="addName" placeholder="مثال: هيثم علي صالح القصلي" 
-                               class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <input type="text" id="addName" placeholder="مثال: هيثم علي صالح القصلي" class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
                     </div>
-                    
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">الصف الدراسي</label>
                         <select id="addGrade" class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
                             <option value="">اختر الصف...</option>
-                            <option value="الأول">الأول</option>
-                            <option value="الثاني">الثاني</option>
-                            <option value="الثالث">الثالث</option>
-                            <option value="الرابع">الرابع</option>
-                            <option value="الخامس">الخامس</option>
-                            <option value="السادس">السادس</option>
-                            <option value="السابع">السابع</option>
-                            <option value="الثامن">الثامن</option>
-                            <option value="التاسع">التاسع</option>
-                            <option value="العاشر">العاشر</option>
+                            <option value="الأول">الأول</option><option value="الثاني">الثاني</option>
+                            <option value="الثالث">الثالث</option><option value="الرابع">الرابع</option>
+                            <option value="الخامس">الخامس</option><option value="السادس">السادس</option>
+                            <option value="السابع">السابع</option><option value="الثامن">الثامن</option>
+                            <option value="التاسع">التاسع</option><option value="العاشر">العاشر</option>
                         </select>
                     </div>
-                    
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">رقم ولي الأمر</label>
-                        <input type="tel" id="addPhone" placeholder="مثال: 773934813" 
-                               class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
+                        <input type="tel" id="addPhone" placeholder="مثال: 773934813" class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none form-input">
                     </div>
                 </div>
-                
                 <div class="flex gap-2">
-                    <button onclick="addStudent()" id="addStudentBtn" 
-                            class="flex-1 bg-blue-700 hover:bg-blue-800 text-white p-2.5 rounded-lg font-bold transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-save"></i>
-                        حفظ بيانات الطالب
+                    <button onclick="addStudent()" id="addStudentBtn" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white p-2.5 rounded-lg font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-save"></i> حفظ بيانات الطالب
                     </button>
-                    <button onclick="resetAddStudentForm()" 
-                            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2.5 rounded-lg font-bold transition">
+                    <button onclick="resetAddStudentForm()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2.5 rounded-lg font-bold transition">
                         <i class="fa-solid fa-undo"></i>
                     </button>
                 </div>
@@ -569,11 +501,9 @@
             </div>
         </div>
 
-        <!-- تبويب 2: إدارة الصور والفقرات -->
         <div id="admin-sub-paragraphs" class="admin-sub-content hidden space-y-6">
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
                 <h2 class="font-bold text-lg text-slate-800 border-b pb-2">شاشة إدارة الاختبارات والفقرات 🖼️</h2>
-
                 <div class="flex flex-wrap gap-2 border-b pb-3 no-print">
                     <button onclick="addParagraph()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs hover:bg-blue-700 transition inline-flex items-center gap-2">
                         <i class="fas fa-plus-circle"></i> إنشاء اختبار / فقرة جديدة
@@ -585,7 +515,6 @@
                         <i class="fas fa-trash-alt"></i> حذف كافة الفقرات
                     </button>
                 </div>
-
                 <form id="paragraphsForm" onsubmit="saveAllParagraphs(event)">
                     <div id="paragraphsList"></div>
                     <div class="flex gap-2 mt-3 no-print">
@@ -593,11 +522,8 @@
                         <button type="submit" class="flex-1 bg-blue-700 text-white p-2 rounded-lg font-bold text-sm hover:bg-blue-800 transition">💾 رفع وحفظ الكل في السحابة</button>
                     </div>
                 </form>
-
                 <div id="loadingOverlay" class="hidden text-center text-blue-700 font-bold py-2">جاري رفع الصور وحفظ البيانات... ⏳</div>
-
                 <button type="button" class="w-full bg-teal-700 text-white p-2.5 rounded-lg font-bold text-sm hover:bg-teal-800 transition mt-4 no-print" onclick="fetchSavedParagraphs()">📥 تحميل واستعراض الفقرات المحفوظة</button>
-
                 <div id="savedSection" class="hidden mt-4 border-t pt-4">
                     <h3 class="font-bold text-md text-gray-800 mb-3">الفقرات المحفوظة من قاعدة البيانات:</h3>
                     <div id="savedContainer" class="space-y-3"></div>
@@ -605,7 +531,6 @@
             </div>
         </div>
 
-        <!-- تبويب 3: الأوسمة -->
         <div id="admin-sub-badges" class="admin-sub-content hidden space-y-4">
             <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3">
                 <h2 class="font-bold text-lg text-amber-900 border-b pb-2">منح الأوسمة والتكريمات الأكاديمية 🏆</h2>
@@ -623,7 +548,6 @@
             </div>
         </div>
 
-        <!-- تبويب 4: الاختبارات والحفظ -->
         <div id="admin-sub-exams" class="admin-sub-content hidden space-y-4">
             <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 space-y-3">
                 <h3 class="font-bold text-lg text-indigo-900">جدولة اختبار أو تحديد مقرر الحفظ المطلوب 📅</h3>
@@ -634,17 +558,14 @@
                 </div>
                 <input type="text" id="exMemo" placeholder="كشف الحفظ المطلوب (مثال: سورة الملك من 1-15)" class="w-full p-2 border rounded-lg bg-white form-input">
                 <textarea id="exInstructions" placeholder="تنبيهات ومتطلبات الاختبار..." class="w-full p-2 border rounded-lg h-16 bg-white form-input"></textarea>
-
                 <div class="bg-white p-2 rounded-lg border">
                     <label class="block text-xs font-bold text-gray-700 mb-1">📷 إرفاق صورة جدول الاختبار أو مقرر الحفظ:</label>
                     <input type="file" id="exFile" class="text-xs" accept="image/*">
                 </div>
-
                 <button onclick="saveExamSchedule()" class="w-full bg-indigo-700 text-white p-2.5 rounded-lg font-bold hover:bg-indigo-800 transition">نشر جدول الاختبار / الحفظ 📤</button>
             </div>
         </div>
 
-        <!-- تبويب 5: مركز المراسلات -->
         <div id="admin-sub-messages" class="admin-sub-content hidden space-y-4">
             <div class="bg-white p-4 rounded-xl border shadow-sm space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
@@ -655,7 +576,6 @@
             </div>
         </div>
 
-        <!-- تبويب 6: الإعلانات والمنشورات -->
         <div id="admin-sub-posts" class="admin-sub-content hidden space-y-4">
             <div class="bg-purple-50/70 p-4 rounded-xl border border-purple-200 space-y-3">
                 <h3 class="font-bold text-lg text-purple-900">نشر إعلان أو خبر أكاديمي جديد 📢</h3>
@@ -673,7 +593,6 @@
             </div>
         </div>
 
-        <!-- تبويب 7: سجل المعاملات -->
         <div id="admin-sub-transactions" class="admin-sub-content hidden space-y-4">
             <div class="bg-slate-50 p-4 rounded-xl border space-y-3">
                 <div class="flex justify-between items-center border-b pb-2">
@@ -684,10 +603,8 @@
             </div>
         </div>
     </section>
-
 </main>
 
-<!-- Modal: ربط ابن جديد لولي الأمر -->
 <div id="linkStudentModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl">
         <div class="flex justify-between items-center border-b pb-2">
@@ -702,7 +619,6 @@
     </div>
 </div>
 
-<!-- Modal: إرسال رسالة جديدة إلى الإدارة -->
 <div id="newMessageModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 space-y-4 shadow-xl">
         <div class="flex justify-between items-center border-b pb-2">
@@ -722,7 +638,6 @@
     </div>
 </div>
 
-<!-- Modal: إرسال رسالة أو رد من الإدارة -->
 <div id="adminBroadcastModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white w-full max-w-lg rounded-2xl p-6 space-y-4 shadow-xl">
         <div class="flex justify-between items-center border-b pb-2">
@@ -757,7 +672,6 @@
     </div>
 </div>
 
-<!-- نافذة استعادة كلمة المرور Modal -->
 <div id="resetPasswordModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
     <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
         <h3 class="font-bold text-lg text-blue-900 border-b pb-2 text-center">طلب استعادة كلمة المرور 🔑</h3>
@@ -777,7 +691,6 @@
     </div>
 </div>
 
-<!-- طباعة الأوراق والمستندات الرسمية -->
 <div id="printTemplate" class="hidden p-8 bg-white text-black space-y-6">
     <div class="text-center border-b pb-4">
         <h1 class="text-2xl font-black">أكاديمية نبلاء اليمن الأهلية</h1>
@@ -788,25 +701,39 @@
     <div id="printDocContent"></div>
 </div>
 
-<!-- Footer -->
 <footer class="bg-slate-900 text-slate-400 text-center text-xs py-4 mt-8 no-print border-t border-slate-800">
     <p>© 2026 أكاديمية نبلاء اليمن الأهلية - جميع الحقوق محفوظة</p>
     <p class="mt-1 text-[11px] text-slate-500">تم التطوير والإشراف بواسطة أ. هيثم علي صالح القصلي</p>
 </footer>
 
-<!-- JavaScript -->
 <script>
-    /* ==============================================================
-       ✅ تم إضافة بيانات Supabase الصحيحة
-    ============================================================== */
+    // ============================================================
+    // ✅ بيانات Supabase - استخدم المفتاح الذي نسخته من الصورة
+    // ============================================================
     const SUPABASE_URL = "https://NBL.Academic.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_3D1Z7yd_R7r_VkvmYjo3ng_oe2VmNG_";
 
+    console.log("🔗 محاولة الاتصال بـ:", SUPABASE_URL);
+    console.log("🔑 المفتاح:", SUPABASE_ANON_KEY);
+
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* ==============================================================
-       أسماء الجداول - مطابقة تماماً لقاعدة البيانات الخاصة بك
-    ============================================================== */
+    // اختبار الاتصال فوراً
+    supabaseClient.from('student').select('count', { count: 'exact', head: true })
+        .then(result => {
+            if (result.error) {
+                console.error("❌ فشل الاتصال:", result.error);
+                showToast("⚠️ فشل الاتصال بقاعدة البيانات: " + result.error.message, 'error');
+            } else {
+                console.log("✅ الاتصال ناجح! عدد الطلاب:", result.count);
+                showToast("✅ تم الاتصال بقاعدة البيانات بنجاح!", 'success');
+            }
+        })
+        .catch(err => {
+            console.error("❌ خطأ:", err);
+            showToast("⚠️ خطأ في الاتصال: " + err.message, 'error');
+        });
+
     const TABLES = {
         STUDENTS: 'student',
         PARENTS: 'parents',
@@ -821,9 +748,6 @@
         TEACHERS: 'teachers'
     };
 
-    /* ==============================================================
-       STATE
-    ============================================================== */
     let currentUserRole = null;
     let currentUserId = null;
     let currentUserName = null;
@@ -832,9 +756,6 @@
     let isEditingStudent = false;
     let editingStudentId = null;
 
-    /* ==============================================================
-       TOAST NOTIFICATIONS
-    ============================================================== */
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         toast.textContent = message;
@@ -843,9 +764,6 @@
         toast._timeout = setTimeout(() => toast.classList.remove('show'), 4000);
     }
 
-    /* ==============================================================
-       NAVIGATION
-    ============================================================== */
     function showPortal(portalId) {
         document.querySelectorAll('.portal-card, .portal-dashboard, #portalSelection').forEach(el => el.classList.add('hidden'));
         const target = document.getElementById(portalId);
@@ -876,10 +794,8 @@
         document.querySelectorAll('.admin-nav-btn').forEach(btn => {
             btn.className = "admin-nav-btn font-bold px-3 py-2 rounded-lg bg-gray-200 text-gray-700 text-xs sm:text-sm hover:bg-gray-300 transition";
         });
-
         const activeSub = document.getElementById(`admin-sub-${tabName}`);
         const activeTabBtn = document.getElementById(`admin-tab-${tabName}`);
-
         if (activeSub) activeSub.classList.remove('hidden');
         if (activeTabBtn) {
             activeTabBtn.className = "admin-nav-btn font-bold px-3 py-2 rounded-lg bg-blue-800 text-white text-xs sm:text-sm shadow-sm transition";
@@ -924,9 +840,6 @@
         }
     }
 
-    /* ==============================================================
-       HELPERS
-    ============================================================== */
     function validateRequired(fields) {
         for (const [key, value] of Object.entries(fields)) {
             if (!value || value.trim() === '') {
@@ -953,13 +866,10 @@
             const { error } = await supabaseClient.storage
                 .from('school-attachments')
                 .upload(fileName, file, { cacheControl: '3600', upsert: false });
-
             if (error) throw error;
-
             const { data: publicData } = supabaseClient.storage
                 .from('school-attachments')
                 .getPublicUrl(fileName);
-
             return publicData.publicUrl;
         } catch (error) {
             console.error('Upload error:', error);
@@ -968,9 +878,6 @@
         }
     }
 
-    /* ==============================================================
-       STUDENT MANAGEMENT (ADMIN)
-    ============================================================== */
     function resetAddStudentForm() {
         document.getElementById('addCode').value = '';
         document.getElementById('addName').value = '';
@@ -978,12 +885,10 @@
         document.getElementById('addPhone').value = '';
         isEditingStudent = false;
         editingStudentId = null;
-
         const saveBtn = document.getElementById('addStudentBtn');
         saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> حفظ بيانات الطالب';
         saveBtn.onclick = addStudent;
         saveBtn.className = 'flex-1 bg-blue-700 hover:bg-blue-800 text-white p-2.5 rounded-lg font-bold transition flex items-center justify-center gap-2';
-
         document.getElementById('addCode').focus();
         showToast('🔄 تم مسح الحقول', 'info');
     }
@@ -999,7 +904,6 @@
             document.getElementById('addCode').focus();
             return;
         }
-
         if (!name) {
             showToast('❌ اسم الطالب مطلوب', 'error');
             document.getElementById('addName').focus();
@@ -1011,7 +915,6 @@
         loading.classList.remove('hidden');
 
         try {
-            // Check for duplicate
             const { data: existing, error: checkError } = await supabaseClient
                 .from(TABLES.STUDENTS)
                 .select('id, name')
@@ -1032,7 +935,6 @@
                 return;
             }
 
-            // Insert student
             const { error: insertError } = await supabaseClient
                 .from(TABLES.STUDENTS)
                 .insert([{
@@ -1057,7 +959,6 @@
         } catch (error) {
             showToast('❌ حدث خطأ غير متوقع: ' + error.message, 'error');
         }
-
         loading.classList.add('hidden');
     }
 
@@ -1213,7 +1114,6 @@
         const feeStatus = document.getElementById('filterFeeStatus').value;
 
         let query = supabaseClient.from(TABLES.STUDENTS).select('*');
-
         if (grade) {
             query = query.ilike('grade', `%${grade}%`);
         }
@@ -1249,9 +1149,6 @@
         showToast(`🔍 تم العثور على ${filtered.length} طالب`, 'info');
     }
 
-    /* ==============================================================
-       FEES MANAGEMENT
-    ============================================================== */
     async function saveFee() {
         const student_id = document.getElementById('fCode').value.trim();
         const total_fee = parseFloat(document.getElementById('fTotal').value) || 0;
@@ -1277,9 +1174,6 @@
         }
     }
 
-    /* ==============================================================
-       ADMIN DASHBOARD STATS
-    ============================================================== */
     async function loadAdminDashboardStats() {
         try {
             const { count: studentCount } = await supabaseClient
@@ -1303,9 +1197,6 @@
         }
     }
 
-    /* ==============================================================
-       PARENT FUNCTIONS
-    ============================================================== */
     async function registerParent() {
         const name = document.getElementById('parentRegName').value.trim();
         const phone = document.getElementById('parentRegPhone').value.trim();
@@ -1463,9 +1354,6 @@
         await fetchStudentFullReport(code);
     }
 
-    /* ==============================================================
-       STUDENT LOGIN
-    ============================================================== */
     async function loginStudent() {
         const code = document.getElementById('studentCodeInput').value.trim();
         if (!code) {
@@ -1486,9 +1374,6 @@
         }
     }
 
-    /* ==============================================================
-       TEACHER FUNCTIONS
-    ============================================================== */
     async function loginTeacher() {
         const user = document.getElementById('teacherUsername').value.trim();
         const pass = document.getElementById('teacherPass').value.trim();
@@ -1640,9 +1525,6 @@
         }
     }
 
-    /* ==============================================================
-       ADMIN LOGIN
-    ============================================================== */
     async function loginAdmin() {
         const user = document.getElementById('adminUser').value.trim();
         const pass = document.getElementById('adminPass').value.trim();
@@ -1665,9 +1547,6 @@
         }
     }
 
-    /* ==============================================================
-       ADMIN BADGE
-    ============================================================== */
     async function grantAdminBadge() {
         const code = document.getElementById('adminBadgeStudentCode').value.trim();
         const badge = document.getElementById('adminBadgeName').value;
@@ -1687,9 +1566,6 @@
         }
     }
 
-    /* ==============================================================
-       MESSAGES
-    ============================================================== */
     function openNewMessageModal(role) {
         document.getElementById('msgSenderRole').value = role;
         document.getElementById('msgSubject').value = '';
@@ -1884,9 +1760,6 @@
         }
     }
 
-    /* ==============================================================
-       PARAGRAPHS MANAGEMENT
-    ============================================================== */
     function addParagraph() {
         const list = document.getElementById('paragraphsList');
         const id = Date.now();
@@ -2018,9 +1891,6 @@
         }
     }
 
-    /* ==============================================================
-       EXAMS, POSTS, TRANSACTIONS
-    ============================================================== */
     async function saveExamSchedule() {
         const grade = document.getElementById('exGrade').value.trim();
         const subject = document.getElementById('exSubject').value.trim();
@@ -2148,9 +2018,6 @@
         }
     }
 
-    /* ==============================================================
-       STUDENT FULL REPORT
-    ============================================================== */
     async function fetchStudentFullReport(code) {
         const { data: student, error: stErr } = await supabaseClient
             .from(TABLES.STUDENTS)
@@ -2175,7 +2042,6 @@
             </div>
         `;
 
-        // Grades
         const { data: grades } = await supabaseClient
             .from(TABLES.GRADES)
             .select('*')
@@ -2198,7 +2064,6 @@
             gradesBody.innerHTML = `<tr><td colspan="3" class="p-2 text-center text-gray-500 text-xs">لا توجد درجات</td></tr>`;
         }
 
-        // Fees
         const { data: fee } = await supabaseClient
             .from(TABLES.FEES)
             .select('*')
@@ -2299,16 +2164,11 @@
         }
     }
 
-    /* ==============================================================
-       INIT
-    ============================================================== */
     document.addEventListener('DOMContentLoaded', () => {
         showPortal('portalSelection');
-        // Pre-fill admin demo credentials
         document.getElementById('adminUser').value = 'admin';
         document.getElementById('adminPass').value = 'admin123';
     });
 </script>
-
 </body>
-</html>
+    </html>
